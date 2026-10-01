@@ -1,0 +1,1533 @@
+<!DOCTYPE html>
+<html lang="en-AU">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#F2F2F7" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
+<title>Budget</title>
+<style>
+:root{
+  color-scheme: light dark;
+  --font: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --rounded: ui-rounded, "SF Pro Rounded", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --bg:#F2F2F7; --card:#FFFFFF; --sheet-bg:#F2F2F7; --sheet-card:#FFFFFF; --seg-on:#FFFFFF;
+  --fill:rgba(120,120,128,.16); --fill2:rgba(120,120,128,.08);
+  --label:#000000; --label2:rgba(60,60,67,.62); --label3:rgba(60,60,67,.3); --sep:rgba(60,60,67,.2);
+  --blue:#007AFF; --green:#34C759; --red:#FF3B30; --orange:#FF9500;
+  --c-blue:#007AFF; --c-green:#34C759; --c-orange:#FF9500; --c-purple:#AF52DE; --c-pink:#FF2D55; --c-teal:#30B0C7;
+  --c-indigo:#5856D6; --c-yellow:#FFCC00; --c-red:#FF3B30; --c-mint:#00C7BE; --c-brown:#A2845E; --c-gray:#8E8E93;
+  --tabbar:rgba(249,249,249,.86); --overlay:rgba(0,0,0,.32); --alert-bg:rgba(242,242,242,.94);
+  --toast:#1C1C1E; --toast-fg:#FFFFFF; --toast-accent:#64D2FF;
+  --shadow:0 1px 2px rgba(0,0,0,.04);
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#000000; --card:#1C1C1E; --sheet-bg:#1C1C1E; --sheet-card:#2C2C2E; --seg-on:#636366;
+    --fill:rgba(120,120,128,.32); --fill2:rgba(120,120,128,.2);
+    --label:#FFFFFF; --label2:rgba(235,235,245,.62); --label3:rgba(235,235,245,.3); --sep:rgba(84,84,88,.65);
+    --blue:#0A84FF; --green:#30D158; --red:#FF453A; --orange:#FF9F0A;
+    --c-blue:#0A84FF; --c-green:#30D158; --c-orange:#FF9F0A; --c-purple:#BF5AF2; --c-pink:#FF375F; --c-teal:#40C8E0;
+    --c-indigo:#5E5CE6; --c-yellow:#FFD60A; --c-red:#FF453A; --c-mint:#63E6E2; --c-brown:#AC8E68; --c-gray:#98989D;
+    --tabbar:rgba(22,22,24,.86); --overlay:rgba(0,0,0,.55); --alert-bg:rgba(44,44,46,.96);
+    --toast:#3A3A3C; --toast-fg:#FFFFFF; --toast-accent:#64D2FF; --shadow:none;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#000000; --card:#1C1C1E; --sheet-bg:#1C1C1E; --sheet-card:#2C2C2E; --seg-on:#636366;
+  --fill:rgba(120,120,128,.32); --fill2:rgba(120,120,128,.2);
+  --label:#FFFFFF; --label2:rgba(235,235,245,.62); --label3:rgba(235,235,245,.3); --sep:rgba(84,84,88,.65);
+  --blue:#0A84FF; --green:#30D158; --red:#FF453A; --orange:#FF9F0A;
+  --c-blue:#0A84FF; --c-green:#30D158; --c-orange:#FF9F0A; --c-purple:#BF5AF2; --c-pink:#FF375F; --c-teal:#40C8E0;
+  --c-indigo:#5E5CE6; --c-yellow:#FFD60A; --c-red:#FF453A; --c-mint:#63E6E2; --c-brown:#AC8E68; --c-gray:#98989D;
+  --tabbar:rgba(22,22,24,.86); --overlay:rgba(0,0,0,.55); --alert-bg:rgba(44,44,46,.96);
+  --toast:#3A3A3C; --toast-fg:#FFFFFF; --toast-accent:#64D2FF; --shadow:none;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-padding-top:env(safe-area-inset-top,0px);-webkit-text-size-adjust:100%}
+body{background:var(--bg);color:var(--label);font-family:var(--font);font-size:17px;line-height:1.35;letter-spacing:-.01em;-webkit-font-smoothing:antialiased;min-height:100%}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;-webkit-tap-highlight-color:transparent;text-align:inherit}
+button:disabled{cursor:default}
+input,select{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--blue);outline-offset:2px;border-radius:8px}
+.app{max-width:560px;margin:0 auto;padding:6px 16px calc(92px + env(safe-area-inset-bottom,0px))}
+.loading{min-height:70vh;display:grid;place-items:center;color:var(--label2);font-size:15px}
+
+.top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:16px 4px 14px}
+.large-title{font-size:34px;font-weight:700;letter-spacing:-.025em;line-height:1.08}
+.meta-row{display:flex;gap:10px;align-items:center;margin-top:8px;flex-wrap:wrap;font-size:15px}
+.chip{font-size:13px;font-weight:600;padding:3px 9px;border-radius:8px;background:color-mix(in srgb,var(--blue) 13%,transparent);color:var(--blue)}
+.days{color:var(--label2);font-weight:500}
+.days.warn{color:var(--orange)}
+.icon-btn{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;color:var(--blue);flex:none;margin-top:2px}
+.icon-btn:active{opacity:.6}
+
+.card{background:var(--card);border-radius:20px;box-shadow:var(--shadow)}
+.stack{display:flex;flex-direction:column;gap:12px}
+.section-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:26px 4px 10px}
+.section-title{font-size:22px;font-weight:700;letter-spacing:-.015em}
+.section-aside{font-size:17px;font-weight:600;color:var(--green);font-variant-numeric:tabular-nums}
+.help{font-size:13px;color:var(--label2);padding:7px 4px 0;line-height:1.4}
+.help.center{text-align:center;padding:10px 12px 0}
+.group-label{font-size:13px;color:var(--label2);padding:0 4px 7px}
+.tone-good{color:var(--green)} .tone-warn{color:var(--orange)} .tone-bad{color:var(--red)}
+
+.hero{padding:18px 18px 16px}
+.hero-label{font-size:15px;color:var(--label2);font-weight:500}
+.hero-amt{font-family:var(--rounded);font-size:48px;font-weight:700;letter-spacing:-.03em;font-variant-numeric:tabular-nums;line-height:1.05;margin-top:3px}
+.hero-amt .cents{font-size:.5em;letter-spacing:-.01em;margin-left:1px}
+.hero-sub{font-size:15px;color:var(--label2);margin-top:5px}
+.sbar{display:flex;height:12px;border-radius:6px;overflow:hidden;margin-top:16px;gap:2px}
+.sbar i{display:block;height:100%;min-width:3px;flex:0 1 auto}
+.sbar i.rest{flex:1 1 0;background:var(--fill);min-width:0}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:10px;font-size:13px;color:var(--label2)}
+.legend span{display:inline-flex;align-items:center;gap:6px;font-variant-numeric:tabular-nums}
+.dot{width:8px;height:8px;border-radius:50%;display:inline-block;flex:none}
+
+.banner{display:flex;gap:12px;align-items:center;padding:12px 12px 12px 16px;border-radius:16px;background:color-mix(in srgb,var(--orange) 14%,var(--card));font-size:15px}
+.banner p{flex:1}
+.banner.error{background:color-mix(in srgb,var(--red) 13%,var(--card))}
+
+.chart-card{padding:16px 16px 12px}
+.chart-title{font-size:15px;font-weight:600;color:var(--label2)}
+.chart-headline{font-family:var(--rounded);font-size:22px;font-weight:700;letter-spacing:-.02em;margin-top:3px;font-variant-numeric:tabular-nums}
+.chart-detail{font-size:15px;color:var(--label2);margin-top:2px;min-height:20px}
+.chart{margin-top:12px;touch-action:pan-y;-webkit-user-select:none;user-select:none;border-radius:8px}
+.chart svg{display:block;overflow:visible}
+.axis{font-size:11px;fill:var(--label2);font-family:var(--font);letter-spacing:0}
+.gl{stroke:var(--sep);stroke-width:1}
+.zero{stroke:var(--label3);stroke-width:1}
+.pace-line{stroke:var(--label3);stroke-width:1.6;stroke-dasharray:4 4;fill:none}
+.actual-line{fill:none;stroke:var(--blue);stroke-width:2.6;stroke-linejoin:round;stroke-linecap:round}
+.sel-line{stroke:var(--label3);stroke-width:1}
+.avg-line{stroke:var(--green);stroke-width:1.4;stroke-dasharray:3 4}
+.chart-legend{display:flex;gap:14px;font-size:13px;color:var(--label2);margin-top:8px}
+.chart-legend span{display:inline-flex;align-items:center;gap:6px}
+.empty-chart{padding:26px 8px 18px;text-align:center;color:var(--label2);font-size:15px}
+
+.list{background:var(--card);border-radius:14px;overflow:hidden;box-shadow:var(--shadow)}
+.row{display:flex;align-items:center;gap:10px;min-height:50px;padding:0 16px;position:relative}
+.row + .row::before{content:"";position:absolute;top:0;left:16px;right:0;height:.5px;background:var(--sep)}
+.row:focus-within{background:var(--fill2)}
+.row-label{flex:none;color:var(--label)}
+.plain{flex:1;border:0;background:transparent;outline:none;padding:13px 0;min-width:0;font-size:17px;width:100%}
+.plain.right{text-align:right;color:var(--label2)}
+select.plain{-webkit-appearance:none;appearance:none;cursor:pointer}
+.plain::placeholder{color:var(--label3)}
+.amount-wrap{display:flex;align-items:center;gap:2px;flex:none;color:var(--label2)}
+.amount-wrap input{width:112px;text-align:right;color:var(--label);font-variant-numeric:tabular-nums}
+.add-link{color:var(--blue);display:flex;gap:10px;align-items:center;padding:13px 0;width:100%;font-size:17px}
+.minus{width:22px;height:22px;border-radius:50%;background:var(--red);color:#fff;display:grid;place-items:center;flex:none}
+.row .switch{margin-left:auto}
+
+.cat{padding:14px 14px 14px}
+.cat-head{display:flex;gap:12px;align-items:center;width:100%;text-align:left;border-radius:12px}
+.tile{width:42px;height:42px;border-radius:12px;display:grid;place-items:center;font-size:22px;flex:none;background:color-mix(in srgb,var(--cc) 17%,transparent)}
+.cat-main{flex:1;min-width:0}
+.cat-line{display:flex;align-items:baseline;justify-content:space-between;gap:8px}
+.cat-name{font-weight:600;font-size:17px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cat-amt{font-weight:600;font-variant-numeric:tabular-nums;display:inline-block}
+.cat-sub{font-size:14px;color:var(--label2);margin-top:1px;display:flex;justify-content:space-between;gap:8px}
+.badge{font-size:11px;font-weight:600;padding:1px 6px;border-radius:5px;background:var(--fill);color:var(--label2);margin-left:6px;vertical-align:2px}
+.chev{color:var(--label3);flex:none;transition:transform .2s}
+.chev.open{transform:rotate(90deg)}
+.bar{height:6px;border-radius:3px;background:var(--fill);margin-top:12px;overflow:hidden}
+.bar i{display:block;height:100%;border-radius:3px;transition:width .45s cubic-bezier(.2,.8,.2,1)}
+.quick{display:flex;gap:8px;margin-top:12px}
+.field{background:var(--fill2);border-radius:12px;display:flex;align-items:center;min-height:44px;padding:0 12px;gap:3px}
+.field input{border:0;background:transparent;outline:none;width:100%;min-width:0;padding:10px 0;font-size:17px}
+.field input::placeholder{color:var(--label3)}
+.field:focus-within{box-shadow:inset 0 0 0 2px color-mix(in srgb,var(--blue) 55%,transparent)}
+.field .pre{color:var(--label2)}
+.quick .amt-field{width:104px;flex:none}
+.quick .name-field{flex:1;min-width:0}
+.date-chip{position:relative;min-width:44px;height:44px;border-radius:12px;background:var(--fill2);display:flex;align-items:center;justify-content:center;color:var(--label2);flex:none;font-size:13px;font-weight:600;padding:0 8px;overflow:hidden}
+.date-chip.set{color:var(--blue);background:color-mix(in srgb,var(--blue) 13%,transparent)}
+.date-row{display:flex;gap:10px;align-items:center;margin-top:8px}
+.date-row .field{flex:1}
+.add-btn{width:44px;height:44px;border-radius:12px;background:var(--blue);color:#fff;display:grid;place-items:center;flex:none;transition:opacity .15s}
+.add-btn:disabled{opacity:.3}
+.exp-list{margin-top:12px}
+.exp{display:flex;align-items:center;gap:10px;width:100%;padding:11px 2px;text-align:left;border-top:.5px solid var(--sep)}
+.exp-title{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:16px}
+.exp-title.untitled{color:var(--label2)}
+.exp-date{font-size:13px;color:var(--label2);flex:none}
+.exp-amt{font-variant-numeric:tabular-nums;font-weight:500;flex:none}
+.cat-foot{display:flex;justify-content:space-between;align-items:center;border-top:.5px solid var(--sep);margin-top:2px;padding-top:4px}
+.text-btn{color:var(--blue);font-size:17px;padding:8px 2px;border-radius:8px}
+.text-btn.small{font-size:15px}
+.text-btn.strong{font-weight:600}
+.text-btn:disabled{color:var(--label3)}
+.empty-card{padding:28px 20px;text-align:center}
+.empty-card h3{font-size:17px;font-weight:600}
+.empty-card p{font-size:15px;color:var(--label2);margin-top:4px}
+@keyframes bump{0%{transform:scale(1)}40%{transform:scale(1.14);color:var(--blue)}100%{transform:scale(1)}}
+.bump{animation:bump .4s cubic-bezier(.2,.8,.2,1)}
+
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;min-height:50px;border-radius:14px;font-weight:600;font-size:17px;width:100%;padding:0 18px;transition:opacity .15s}
+.btn.primary{background:var(--blue);color:#fff}
+.btn.tinted{background:color-mix(in srgb,var(--blue) 13%,transparent);color:var(--blue)}
+.btn.danger{background:color-mix(in srgb,var(--red) 12%,transparent);color:var(--red)}
+.btn:active{opacity:.7}
+.btn:disabled{opacity:.4}
+.btn-sm{min-height:34px;padding:0 14px;border-radius:10px;font-size:15px;font-weight:600;background:color-mix(in srgb,var(--blue) 13%,transparent);color:var(--blue);display:inline-flex;align-items:center;gap:4px;flex:none}
+.rollover{margin-top:28px}
+
+.seg{display:flex;background:var(--fill);border-radius:10px;padding:2px;gap:2px}
+.seg button{flex:1;min-height:32px;border-radius:8px;font-size:14px;font-weight:500;color:var(--label);text-align:center;transition:background .15s}
+.seg button[aria-pressed="true"]{background:var(--seg-on);font-weight:600;box-shadow:0 2px 6px rgba(0,0,0,.1),0 0 0 .5px rgba(0,0,0,.04)}
+.switch{width:51px;height:31px;border-radius:16px;background:var(--fill);position:relative;flex:none;transition:background .2s}
+.switch[aria-checked="true"]{background:var(--green)}
+.switch::after{content:"";position:absolute;top:2px;left:2px;width:27px;height:27px;border-radius:50%;background:#fff;box-shadow:0 2px 5px rgba(0,0,0,.2);transition:transform .22s cubic-bezier(.2,.8,.2,1)}
+.switch[aria-checked="true"]::after{transform:translateX(20px)}
+
+.setup{padding:18px}
+.setup h2{font-size:20px;font-weight:700;letter-spacing:-.01em}
+.setup > p{font-size:15px;color:var(--label2);margin:4px 0 16px}
+
+.sheet-wrap{position:fixed;inset:0;z-index:40;display:flex;align-items:flex-end;justify-content:center}
+.sheet-backdrop{position:absolute;inset:0;background:var(--overlay);animation:fade .2s ease}
+.sheet{position:relative;width:100%;max-width:560px;max-height:calc(100% - 20px - env(safe-area-inset-top,0px));background:var(--sheet-bg);border-radius:18px 18px 0 0;display:flex;flex-direction:column;animation:up .32s cubic-bezier(.2,.9,.25,1);--card:var(--sheet-card);outline:none}
+.sheet.tall{height:calc(100% - 20px - env(safe-area-inset-top,0px))}
+.sheet-head{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;padding:12px 16px 8px;gap:8px}
+.sheet-title{font-weight:600;font-size:17px;text-align:center;white-space:nowrap}
+.sheet-left{justify-self:start}
+.sheet-right{justify-self:end}
+.sheet-body{overflow-y:auto;padding:8px 16px calc(28px + env(safe-area-inset-bottom,0px));-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
+.sheet .section-head{padding-top:20px}
+@media (min-width:620px){
+  .sheet-wrap{align-items:center}
+  .sheet{border-radius:20px;max-height:min(780px,calc(100% - 48px))}
+  .sheet.tall{height:min(860px,calc(100% - 48px))}
+}
+@keyframes up{from{transform:translateY(48px);opacity:.5}to{transform:none;opacity:1}}
+@keyframes fade{from{opacity:0}}
+@keyframes pop{from{transform:scale(1.12);opacity:0}}
+.form{display:flex;flex-direction:column;gap:20px}
+.big-amount{display:flex;justify-content:center;align-items:baseline;gap:2px;padding:14px 0 2px}
+.big-amount span{font-family:var(--rounded);font-size:36px;font-weight:700;color:var(--label2)}
+.big-amount input{font-family:var(--rounded);font-size:52px;font-weight:700;letter-spacing:-.03em;border:0;background:transparent;outline:none;text-align:center;font-variant-numeric:tabular-nums;max-width:100%}
+.name-row{display:flex;gap:12px;align-items:center}
+.emoji-grid{display:grid;grid-template-columns:repeat(8,1fr);gap:4px;padding:10px;background:var(--card);border-radius:14px}
+.emoji-grid button{aspect-ratio:1;border-radius:10px;font-size:23px;display:grid;place-items:center;text-align:center}
+.emoji-grid button[aria-pressed="true"]{background:color-mix(in srgb,var(--blue) 16%,transparent);box-shadow:inset 0 0 0 2px var(--blue)}
+.swatches{display:flex;flex-wrap:wrap;gap:12px;padding:14px;background:var(--card);border-radius:14px}
+.swatches button{width:30px;height:30px;border-radius:50%;background:var(--sw)}
+.swatches button[aria-pressed="true"]{box-shadow:0 0 0 2px var(--card),0 0 0 4.5px var(--sw)}
+.sum-list .row{min-height:44px;font-size:15px}
+.sum-amt{margin-left:auto;min-width:88px;text-align:right;font-variant-numeric:tabular-nums}
+.pill + .sum-amt{margin-left:10px}
+.card-head{display:flex;justify-content:space-between;align-items:center;gap:8px;min-height:28px}
+.stat .sub{font-size:13px;color:var(--label2);margin-top:1px}
+.bl-val b{font-weight:600;color:var(--label);margin-right:6px}
+.bl-val b.tone-bad{color:var(--red)}
+
+.alert-wrap{position:fixed;inset:0;z-index:60;display:grid;place-items:center;background:var(--overlay);padding:24px;animation:fade .15s}
+.alert{width:280px;background:var(--alert-bg);-webkit-backdrop-filter:blur(24px);backdrop-filter:blur(24px);border-radius:16px;text-align:center;overflow:hidden;animation:pop .22s cubic-bezier(.2,.9,.25,1)}
+.alert-body{padding:20px 18px 16px}
+.alert h3{font-size:17px;font-weight:600}
+.alert p{font-size:13px;margin-top:5px;line-height:1.4}
+.alert-btns{display:flex;border-top:.5px solid var(--sep)}
+.alert-btns button{flex:1;min-height:46px;color:var(--blue);font-size:17px;text-align:center}
+.alert-btns button + button{border-left:.5px solid var(--sep)}
+.alert-btns .strong{font-weight:600}
+.alert-btns .destructive{color:var(--red);font-weight:600}
+
+.toast{position:fixed;left:50%;bottom:calc(84px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:50;background:var(--toast);color:var(--toast-fg);border-radius:14px;padding:10px 10px 10px 16px;display:flex;align-items:center;gap:14px;font-size:15px;box-shadow:0 10px 30px rgba(0,0,0,.2);animation:toast .28s cubic-bezier(.2,.9,.25,1);max-width:calc(100% - 32px);white-space:nowrap}
+.toast button{color:var(--toast-accent);font-weight:600;padding:4px 8px}
+@keyframes toast{from{transform:translate(-50%,16px);opacity:0}}
+
+.tabbar{position:fixed;left:0;right:0;bottom:0;z-index:30;background:var(--tabbar);-webkit-backdrop-filter:saturate(180%) blur(20px);backdrop-filter:saturate(180%) blur(20px);border-top:.5px solid var(--sep);padding-bottom:env(safe-area-inset-bottom,0px)}
+.tabbar-inner{max-width:560px;margin:0 auto;display:flex}
+.tab{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:7px 0 7px;font-size:10.5px;font-weight:500;color:var(--label2);text-align:center}
+.tab[aria-current="page"]{color:var(--blue)}
+
+.tiles{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.stat{background:var(--card);border-radius:18px;padding:13px 15px;box-shadow:var(--shadow)}
+.stat .k{font-size:13px;color:var(--label2);font-weight:500}
+.stat .v{font-family:var(--rounded);font-size:23px;font-weight:700;letter-spacing:-.02em;margin-top:2px;font-variant-numeric:tabular-nums}
+.stat.mini{padding:10px 12px;border-radius:14px}
+.stat.mini .v{font-size:18px}
+.tiles.three{grid-template-columns:repeat(3,1fr);gap:8px}
+.readout{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}
+.readout .k{font-size:12px;color:var(--label2)}
+.readout .v{font-size:17px;font-weight:700;font-family:var(--rounded);font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+.readout-head{display:flex;justify-content:space-between;align-items:center;gap:8px;min-height:30px}
+.readout-head .chart-title{color:var(--label)}
+.scroller{display:flex;gap:10px;overflow-x:auto;padding:2px 16px 8px;margin:0 -16px;scroll-snap-type:x proximity;scrollbar-width:none;scroll-padding:0 16px}
+.scroller::-webkit-scrollbar{display:none}
+.pcard{scroll-snap-align:start;flex:none;width:158px;text-align:left;background:var(--card);border-radius:18px;padding:13px 14px;box-shadow:var(--shadow)}
+.pcard .r{font-weight:600;font-size:16px;white-space:nowrap}
+.pcard .y{font-size:13px;color:var(--label2)}
+.pcard .s{font-size:14px;color:var(--label2);margin-top:10px;font-variant-numeric:tabular-nums}
+.pill{display:inline-block;font-size:13px;font-weight:600;padding:2px 8px;border-radius:7px;margin-top:5px;font-variant-numeric:tabular-nums}
+.pill.good{color:var(--green);background:color-mix(in srgb,var(--green) 14%,transparent)}
+.pill.bad{color:var(--red);background:color-mix(in srgb,var(--red) 12%,transparent)}
+.pill.flat{color:var(--label2);background:var(--fill)}
+.pill.warn{color:var(--orange);background:color-mix(in srgb,var(--orange) 14%,transparent)}
+
+.bullets{display:flex;flex-direction:column;gap:15px;margin-top:14px}
+.bl-top{display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-size:15px}
+.bl-name{display:flex;gap:7px;align-items:center;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bl-val{color:var(--label2);font-variant-numeric:tabular-nums;white-space:nowrap;font-size:14px}
+.bl-track{position:relative;height:10px;margin-top:7px}
+.bl-target{position:absolute;top:0;bottom:0;left:0;border-radius:5px;background:color-mix(in srgb,var(--cc) 18%,transparent)}
+.bl-fill{position:absolute;top:0;bottom:0;left:0;border-radius:5px;background:var(--cc);transition:width .45s cubic-bezier(.2,.8,.2,1)}
+.bl-fill.over{background:var(--red)}
+.bl-mark{position:absolute;top:-3px;bottom:-3px;width:2px;border-radius:1px;background:var(--label);margin-left:-1px}
+
+.donut-wrap{position:relative;width:196px;height:196px;margin:14px auto 4px}
+.donut-wrap svg{display:block}
+.donut-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;text-align:center;padding:40px}
+.donut-center .v{font-family:var(--rounded);font-size:24px;font-weight:700;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.donut-center .k{font-size:13px;color:var(--label2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:120px}
+.lg-row{display:flex;align-items:center;gap:10px;width:100%;padding:10px 8px;border-top:.5px solid var(--sep);text-align:left;font-size:15px}
+.lg-row:first-child{border-top:0}
+.lg-row[aria-pressed="true"]{background:var(--fill2);border-radius:10px;border-color:transparent}
+.lg-row[aria-pressed="true"] + .lg-row{border-color:transparent}
+.lg-name{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lg-amt{font-variant-numeric:tabular-nums}
+.lg-pct{color:var(--label2);width:42px;text-align:right;font-variant-numeric:tabular-nums}
+
+.trend{display:flex;align-items:center;gap:10px;padding:11px 0;border-top:.5px solid var(--sep)}
+.trend:first-of-type{border-top:0}
+.trend .tile{width:36px;height:36px;border-radius:10px;font-size:19px}
+.trend-main{flex:1;min-width:0}
+.trend-name{font-weight:600;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.trend-sub{font-size:13px;color:var(--label2);font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.trend .pill{margin-top:0;min-width:54px;text-align:center;flex:none}
+.spark{flex:none}
+.spark path{fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important}
+}
+</style>
+</head>
+<body>
+<div id="app"><div class="loading">Loading your budget…</div></div>
+<script src="https://cdn.jsdelivr.net/npm/htm@3.1.1/preact/standalone.umd.js"></script>
+<script>
+(function(){
+'use strict';
+const { html, render, useState, useEffect, useMemo, useRef, useCallback } = window.htmPreact;
+
+/* ---------- dates (local time, never UTC) ---------- */
+const pad = n => String(n).padStart(2,'0');
+const toISO = d => `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+const isISO = s => typeof s==='string' && /^\d{4}-\d{2}-\d{2}$/.test(s);
+const parseISO = s => { const [y,m,d] = s.split('-').map(Number); return new Date(y, m-1, d); };
+const todayISO = () => toISO(new Date());
+const addDays = (s,n) => { const d = parseISO(s); d.setDate(d.getDate()+n); return toISO(d); };
+const addMonths = (s,n) => { const d = parseISO(s); const day = d.getDate(); const t = new Date(d.getFullYear(), d.getMonth()+n, 1); const last = new Date(t.getFullYear(), t.getMonth()+1, 0).getDate(); t.setDate(Math.min(day,last)); return toISO(t); };
+const diffDays = (a,b) => Math.round((parseISO(b) - parseISO(a)) / 86400000);
+const clampDate = (s,a,b) => s < a ? a : s > b ? b : s;
+const MON = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const WEEKDAYS = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+const WD = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+const fmtDay = s => { const d = parseISO(s); return `${d.getDate()} ${MON[d.getMonth()]}`; };
+const fmtDayLong = s => { const d = parseISO(s); return `${WD[d.getDay()]} ${d.getDate()} ${MON[d.getMonth()]}`; };
+function fmtRange(a, b, withYear){
+  const da = parseISO(a), db = parseISO(b);
+  const y = withYear ? ` ${db.getFullYear()}` : '';
+  if (da.getFullYear() !== db.getFullYear()) return `${fmtDay(a)} ${da.getFullYear()} – ${fmtDay(b)} ${db.getFullYear()}`;
+  if (da.getMonth() === db.getMonth()) return `${da.getDate()}–${db.getDate()} ${MON[db.getMonth()]}${y}`;
+  return `${fmtDay(a)} – ${fmtDay(b)}${y}`;
+}
+const ordinal = n => n + (n % 100 >= 11 && n % 100 <= 13 ? 'th' : ['th','st','nd','rd'][n % 10] || 'th');
+const LENS = ['weekly','fortnightly','monthly'];
+const LEN_LABEL = { weekly:'Weekly', fortnightly:'Fortnightly', monthly:'Monthly' };
+const LEN_OPTIONS = LENS.map(v => ({ value:v, label:LEN_LABEL[v] }));
+const periodEnd = (start, len) => len==='weekly' ? addDays(start,6) : len==='monthly' ? addDays(addMonths(start,1),-1) : addDays(start,13);
+
+/* ---------- money ---------- */
+const round2 = n => Math.round((n + Number.EPSILON) * 100) / 100;
+const AUD = new Intl.NumberFormat('en-AU', { style:'currency', currency:'AUD' });
+const AUD0 = new Intl.NumberFormat('en-AU', { style:'currency', currency:'AUD', maximumFractionDigits:0 });
+const money = n => AUD.format(round2(n || 0));
+const money0 = n => AUD0.format(Math.round(n || 0));
+const compact = n => { const a = Math.abs(n); if (a >= 1000) { const k = n/1000; return '$' + (Number.isInteger(k) ? k : +k.toFixed(a >= 10000 ? 0 : 2)) + 'k'; } return '$' + Math.round(n); };
+const pct = r => `${Math.round(r*100)}%`;
+function parseAmount(v){
+  if (v == null) return NaN;
+  const parts = String(v).replace(/[$,\s]/g,'').split('+').filter(Boolean);
+  if (!parts.length) return NaN;
+  let t = 0;
+  for (const p of parts){ const x = Number(p); if (!isFinite(x)) return NaN; t += x; }
+  return round2(t);
+}
+const num = v => { const n = parseAmount(v); return isFinite(n) ? n : 0; };
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2,8);
+const clone = o => JSON.parse(JSON.stringify(o));
+
+/* ---------- model ---------- */
+const COLORS = ['blue','green','orange','purple','pink','teal','indigo','yellow','red','mint','brown','gray'];
+const cvar = c => `var(--c-${COLORS.includes(c) ? c : 'gray'})`;
+const EMOJIS = ['🏠','🛒','🚗','⛽','🍔','☕','🍺','🎬','📱','💡','💊','🏋️','👕','💇','🐶','🎁','✈️','🏖️','📚','🎓','🧾','💳','🔧','🚌','🅿️','🎮','🎵','🧴','👶','🌿','💰','📦'];
+const newCategory = o => ({ id:uid(), name:'', emoji:'💰', color:'blue', target:null, fixed:false, expenses:[], ...o });
+const defaultCategories = () => [
+  newCategory({ name:'Rent', emoji:'🏠', color:'indigo', target:1200, fixed:true }),
+  newCategory({ name:'Groceries', emoji:'🛒', color:'green', target:300 }),
+  newCategory({ name:'Transport', emoji:'🚗', color:'orange', target:150 }),
+  newCategory({ name:'Eating out', emoji:'🍔', color:'pink', target:100 }),
+];
+function newPeriod(start, len, prev, carryPay){
+  return {
+    id: uid(), start, end: periodEnd(start, len), length: len, note:'', savedAt:null,
+    income: { main: { label: prev ? prev.income.main.label : 'Pay', amount: prev && carryPay ? prev.income.main.amount : '' }, extras: [] },
+    categories: prev ? prev.categories.map(c => ({ ...c, expenses: [] })) : defaultCategories(),
+  };
+}
+const incomeTotal = p => round2(num(p.income.main.amount) + p.income.extras.reduce((s,x) => s + num(x.amount), 0));
+const catSpent = c => round2(c.expenses.reduce((s,x) => s + (x.amount || 0), 0));
+const spentTotal = p => round2(p.categories.reduce((s,c) => s + catSpent(c), 0));
+const hasTarget = c => c.target != null && c.target > 0;
+const targetTotal = p => p.categories.reduce((s,c) => s + (hasTarget(c) ? c.target : 0), 0);
+const periodStats = p => { const inc = incomeTotal(p), sp = spentTotal(p); return { inc, sp, net: round2(inc - sp), rate: inc > 0 ? (inc - sp) / inc : null }; };
+const byStartDesc = (a,b) => b.start.localeCompare(a.start);
+const byStartAsc = (a,b) => a.start.localeCompare(b.start);
+
+function normPeriod(p){
+  if (!p || typeof p !== 'object') return null;
+  const len = LENS.includes(p.length) ? p.length : 'fortnightly';
+  const start = isISO(p.start) ? p.start : todayISO();
+  const end = isISO(p.end) && p.end >= start ? p.end : periodEnd(start, len);
+  const inc = p.income || {};
+  const main = inc.main || {};
+  return {
+    id: String(p.id || uid()), start, end, length: len, note: String(p.note || ''), savedAt: p.savedAt || null,
+    income: {
+      main: { label: String(main.label ?? 'Pay'), amount: String(main.amount ?? '') },
+      extras: (Array.isArray(inc.extras) ? inc.extras : []).map(x => ({ id: String(x.id || uid()), label: String(x.label ?? ''), amount: String(x.amount ?? '') })),
+    },
+    categories: (Array.isArray(p.categories) ? p.categories : []).map(c => ({
+      id: String(c.id || uid()), name: String(c.name || 'Untitled'), emoji: String(c.emoji || '💰'),
+      color: COLORS.includes(c.color) ? c.color : 'gray',
+      target: (c.target == null || c.target === '' || !(Number(c.target) > 0)) ? null : Number(c.target),
+      fixed: !!c.fixed,
+      expenses: (Array.isArray(c.expenses) ? c.expenses : []).map(x => ({ id: String(x.id || uid()), amount: round2(Number(x.amount) || 0), title: String(x.title || ''), date: isISO(x.date) ? x.date : start })),
+    })),
+  };
+}
+function normMain(m){
+  if (!m || typeof m !== 'object') return null;
+  const cur = normPeriod(m.current);
+  if (!cur) return null;
+  const s = m.settings || {};
+  return { v:3, setupDone: m.setupDone !== false, settings: { length: LENS.includes(s.length) ? s.length : cur.length, theme: ['auto','light','dark'].includes(s.theme) ? s.theme : 'auto' }, current: cur };
+}
+const freshMain = () => { const t = todayISO(); return { v:3, setupDone:false, settings:{ length:'fortnightly', theme:'auto' }, current: newPeriod(t, 'fortnightly', null, false) }; };
+
+function periodReducer(p, a){
+  const mapCat = (id, f) => ({ ...p, categories: p.categories.map(c => c.id === id ? f(c) : c) });
+  const splice = (arr, i, item) => { const r = [...arr]; r.splice(Math.max(0, Math.min(i, r.length)), 0, item); return r; };
+  switch (a.type){
+    case 'addExp': return mapCat(a.catId, c => ({ ...c, expenses: [...c.expenses, a.expense] }));
+    case 'updExp': {
+      const from = p.categories.find(c => c.expenses.some(x => x.id === a.expense.id));
+      if (from && from.id === a.catId) return mapCat(a.catId, c => ({ ...c, expenses: c.expenses.map(x => x.id === a.expense.id ? a.expense : x) }));
+      const cats = p.categories.map(c => ({ ...c, expenses: c.expenses.filter(x => x.id !== a.expense.id) }));
+      return { ...p, categories: cats.map(c => c.id === a.catId ? { ...c, expenses: [...c.expenses, a.expense] } : c) };
+    }
+    case 'delExp': return mapCat(a.catId, c => ({ ...c, expenses: c.expenses.filter(x => x.id !== a.id) }));
+    case 'restoreExp': return mapCat(a.catId, c => ({ ...c, expenses: splice(c.expenses, a.index, a.expense) }));
+    case 'saveCat': {
+      const exists = p.categories.some(c => c.id === a.cat.id);
+      return { ...p, categories: exists ? p.categories.map(c => c.id === a.cat.id ? { ...a.cat, expenses: c.expenses } : c) : [...p.categories, { ...a.cat, expenses: a.cat.expenses || [] }] };
+    }
+    case 'delCat': return { ...p, categories: p.categories.filter(c => c.id !== a.id) };
+    case 'restoreCat': return { ...p, categories: splice(p.categories, a.index, a.cat) };
+    case 'moveCat': {
+      const i = p.categories.findIndex(c => c.id === a.id), j = i + a.dir;
+      if (i < 0 || j < 0 || j >= p.categories.length) return p;
+      const cs = [...p.categories]; [cs[i], cs[j]] = [cs[j], cs[i]]; return { ...p, categories: cs };
+    }
+    case 'mainIncome': return { ...p, income: { ...p.income, main: { ...p.income.main, ...a.patch } } };
+    case 'addExtra': return { ...p, income: { ...p.income, extras: [...p.income.extras, { id: a.id || uid(), label:'', amount:'' }] } };
+    case 'setExtra': return { ...p, income: { ...p.income, extras: p.income.extras.map(x => x.id === a.id ? { ...x, ...a.patch } : x) } };
+    case 'delExtra': return { ...p, income: { ...p.income, extras: p.income.extras.filter(x => x.id !== a.id) } };
+    case 'restoreExtra': return { ...p, income: { ...p.income, extras: splice(p.income.extras, a.index, a.item) } };
+    case 'dates': return { ...p, start: a.start ?? p.start, end: a.end ?? p.end };
+    case 'note': return { ...p, note: a.note };
+    default: return p;
+  }
+}
+
+function daysInfo(p, today){
+  const n = diffDays(p.start, p.end) + 1, ti = diffDays(p.start, today);
+  if (ti < 0) return { n, state:'future', remaining:n, label:`Starts in ${-ti} day${ti === -1 ? '' : 's'}`, tone:'' };
+  if (ti >= n){ const ago = ti - n + 1; return { n, state:'ended', remaining:0, label: ago === 1 ? 'Ended yesterday' : `Ended ${ago} days ago`, tone:'warn' }; }
+  const rem = n - ti;
+  return { n, state:'active', remaining:rem, label: rem === 1 ? 'Last day' : `${rem} days left`, tone: rem === 1 ? 'warn' : '' };
+}
+
+/* Daily and cumulative spend, plus a pace line that front-loads bills */
+function paceData(p, today){
+  const n = diffDays(p.start, p.end) + 1;
+  const daily = Array(n).fill(0);
+  const byDay = Array.from({ length:n }, () => []);
+  for (const c of p.categories) for (const x of c.expenses){
+    const i = Math.max(0, Math.min(n - 1, diffDays(p.start, x.date)));
+    daily[i] = round2(daily[i] + x.amount);
+    byDay[i].push({ ...x, cat: c });
+  }
+  const cum = []; let s = 0; for (const v of daily){ s = round2(s + v); cum.push(s); }
+  const inc = incomeTotal(p), tgt = targetTotal(p);
+  const base = inc > 0 ? inc : tgt;
+  const fixedCats = p.categories.filter(c => c.fixed);
+  const fixedPlanned = fixedCats.reduce((a,c) => a + (hasTarget(c) ? c.target : catSpent(c)), 0);
+  const fixedSpent = fixedCats.reduce((a,c) => a + catSpent(c), 0);
+  const fixedBase = Math.min(fixedPlanned, base);
+  const ideal = t => base > 0 ? fixedBase + (base - fixedBase) * t / n : 0; // t = days elapsed (0..n)
+  const ti = diffDays(p.start, today);
+  const upto = ti < 0 ? -1 : Math.min(n - 1, ti);
+  return { n, daily, byDay, cum, base, basis: inc > 0 ? 'income' : 'targets', fixedBase, fixedSpent, ideal, ti, upto };
+}
+function paceStatus(d){
+  if (d.ti < 0) return { tone:'', title:`Starts in ${-d.ti} day${d.ti === -1 ? '' : 's'}`, detail:'Your pace will show once the period begins.' };
+  const spent = d.cum[d.upto];
+  if (!d.base) return { tone:'', title:`${money0(spent)} spent so far`, detail:'Add your pay or category targets to see your pace.' };
+  if (d.ti >= d.n){
+    const left = d.base - spent;
+    return left >= 0
+      ? { tone:'good', title:`Finished ${money0(left)} under`, detail:`You spent ${money0(spent)} of ${money0(d.base)}.` }
+      : { tone:'bad', title:`Finished ${money0(-left)} over`, detail:`You spent ${money0(spent)} of ${money0(d.base)}.` };
+  }
+  const done = d.upto + 1;
+  const diff = d.ideal(done) - spent;
+  const projected = Math.max(d.fixedBase, d.fixedSpent) + (spent - d.fixedSpent) / done * d.n;
+  const projLeft = d.base - projected;
+  const outlook = done < 3 ? 'It’s early, so this settles as you log more.'
+    : projLeft >= 0 ? `On track to finish with about ${money0(projLeft)} left.` : `At this rate you’d finish ${money0(-projLeft)} over.`;
+  if (Math.abs(diff) < 1) return { tone:'good', title:'Right on pace', detail: outlook };
+  return diff > 0 ? { tone:'good', title:`${money0(diff)} under pace`, detail: outlook } : { tone:'warn', title:`${money0(-diff)} over pace`, detail: outlook };
+}
+function niceScale(maxV, count){
+  count = count || 3;
+  if (!(maxV > 0)) maxV = 1;
+  const raw = maxV / count, p = Math.pow(10, Math.floor(Math.log10(raw))), f = raw / p;
+  const step = (f <= 1 ? 1 : f <= 2 ? 2 : f <= 2.5 ? 2.5 : f <= 5 ? 5 : 10) * p;
+  const top = Math.ceil(maxV / step - 1e-9) * step;
+  const ticks = []; for (let v = 0; v <= top + step / 1e6; v += step) ticks.push(round2(v));
+  return { step, top, ticks };
+}
+
+/* ---------- storage: Claude db when available, browser storage otherwise ---------- */
+const LS_KEY = 'budget-tracker-v3';
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+const store = {
+  mode:'memory', root:null, periods:null, lastMain:null, lastLocal:null, pendingMain:null,
+  timer:0, ltimer:0, chain:Promise.resolve(), pchain:Promise.resolve(), onStatus: () => {},
+  async init(){
+    try {
+      if (window.claude && typeof window.claude.use === 'function'){
+        const [db, user] = await Promise.all([window.claude.use('db'), window.claude.use('user')]);
+        const id = user ? await user.id() : null;
+        if (db && id){
+          const root = db.doc(`data/users/${id}/app`);
+          const periods = root.collection('periods');
+          const [snap, ps] = await Promise.all([this.retry(() => root.get()), this.retry(() => periods.get())]);
+          this.root = root; this.periods = periods; this.mode = 'cloud';
+          return { main: snap.exists ? clone(snap.data()) : null, history: ps.docs.map(d => clone(d.data())) };
+        }
+      }
+    } catch (e) { console.warn('Claude storage unavailable, using this browser', e); }
+    try {
+      localStorage.setItem(LS_KEY + ':t', '1'); localStorage.removeItem(LS_KEY + ':t');
+      this.mode = 'local';
+      const data = JSON.parse(localStorage.getItem(LS_KEY) || 'null');
+      return { main: data && data.main, history: (data && data.history) || [] };
+    } catch (e) { this.mode = 'memory'; return { main:null, history:[] }; }
+  },
+  async retry(fn){ try { return await fn(); } catch (e) { if (e && e.code === 'unavailable'){ await sleep(300 + Math.random() * 700); return fn(); } throw e; } },
+  markSaved(main, history){ this.lastMain = JSON.stringify(main); this.lastLocal = JSON.stringify({ main, history }); },
+  async write(fn){
+    try { await this.retry(fn); this.onStatus({ state:'saved' }); }
+    catch (e) { this.onStatus({ state:'error', code: e && e.code }); throw e; }
+  },
+  saveMain(main){
+    if (this.mode !== 'cloud') return;
+    const s = JSON.stringify(main);
+    if (s === this.lastMain && !this.pendingMain) return;
+    this.pendingMain = s;
+    clearTimeout(this.timer);
+    this.timer = setTimeout(() => this.flush(), 700);
+  },
+  flush(){
+    clearTimeout(this.timer);
+    const s = this.pendingMain;
+    if (!s || this.mode !== 'cloud') return this.chain;
+    this.pendingMain = null;
+    if (s === this.lastMain) return this.chain;
+    this.chain = this.chain.catch(() => {}).then(() => this.write(() => this.root.set(JSON.parse(s)))).then(() => { this.lastMain = s; }).catch(() => {});
+    return this.chain;
+  },
+  savePeriod(p){
+    if (this.mode !== 'cloud') return;
+    const data = clone(p);
+    this.pchain = this.pchain.catch(() => {}).then(() => this.write(() => this.periods.doc(data.id).set(data))).catch(() => {});
+  },
+  deletePeriod(id){
+    if (this.mode !== 'cloud') return;
+    this.pchain = this.pchain.catch(() => {}).then(() => this.write(() => this.periods.doc(id).delete())).catch(() => {});
+  },
+  saveLocal(main, history){
+    if (this.mode !== 'local') return;
+    const s = JSON.stringify({ main, history });
+    if (s === this.lastLocal) return;
+    clearTimeout(this.ltimer);
+    this.ltimer = setTimeout(() => {
+      try { localStorage.setItem(LS_KEY, s); this.lastLocal = s; }
+      catch (e) { this.onStatus({ state:'error', code:'local' }); }
+    }, 300);
+  },
+};
+
+async function saveFile(filename, data){
+  let dl = null;
+  try { dl = window.claude && typeof window.claude.use === 'function' ? await window.claude.use('downloads') : null; } catch (e) { dl = null; }
+  if (dl){
+    try { await dl.save({ filename, data }); return 'saved'; }
+    catch (e) { return e && e.code === 'declined' ? 'declined' : 'failed'; }
+  }
+  try {
+    const blob = new Blob([data], { type: filename.endsWith('.csv') ? 'text/csv' : 'application/json' });
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = filename;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 3000);
+    return 'saved';
+  } catch (e) { return 'failed'; }
+}
+const csvCell = v => { const s = String(v ?? ''); return /[",\n]/.test(s) ? '"' + s.replace(/"/g,'""') + '"' : s; };
+function toCSV(periods){
+  const rows = [['period_start','period_end','type','date','category','name','amount']];
+  for (const p of [...periods].sort(byStartAsc)){
+    if (num(p.income.main.amount)) rows.push([p.start, p.end, 'income', p.start, '', p.income.main.label, num(p.income.main.amount)]);
+    for (const x of p.income.extras) if (num(x.amount)) rows.push([p.start, p.end, 'income', p.start, '', x.label, num(x.amount)]);
+    for (const c of p.categories) for (const e of [...c.expenses].sort((a,b) => a.date.localeCompare(b.date))) rows.push([p.start, p.end, 'expense', e.date, c.name, e.title, e.amount]);
+  }
+  return rows.map(r => r.map(csvCell).join(',')).join('\n');
+}
+
+/* ---------- small UI pieces ---------- */
+const Icon = {
+  more: () => html`<svg width="26" height="26" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.6" fill="none" stroke="currentColor" stroke-width="1.7"/><circle cx="7.6" cy="12" r="1.35" fill="currentColor"/><circle cx="12" cy="12" r="1.35" fill="currentColor"/><circle cx="16.4" cy="12" r="1.35" fill="currentColor"/></svg>`,
+  plus: (s) => html`<svg width=${s || 20} height=${s || 20} viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>`,
+  plusCircle: () => html`<svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="currentColor"/><path d="M12 7.5v9M7.5 12h9" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>`,
+  minus: () => html`<svg width="12" height="12" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14" stroke="currentColor" stroke-width="3.2" stroke-linecap="round"/></svg>`,
+  chev: () => html`<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg>`,
+  cal: () => html`<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15.5" rx="3"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg>`,
+  budget: (on) => html`<svg width="26" height="26" viewBox="0 0 24 24" aria-hidden="true">${on
+    ? html`<rect x="2.5" y="5" width="19" height="14" rx="3.2" fill="currentColor"/><rect x="2.5" y="8.6" width="19" height="2.6" style="fill:var(--tabbar);opacity:.9"/><rect x="5.5" y="14.2" width="5" height="1.8" rx=".9" style="fill:var(--tabbar);opacity:.9"/>`
+    : html`<rect x="3.2" y="5.7" width="17.6" height="12.6" rx="2.8" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M3.2 9.9h17.6" stroke="currentColor" stroke-width="1.6"/><path d="M6 15h4.4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>`}</svg>`,
+  chart: (on) => html`<svg width="26" height="26" viewBox="0 0 24 24" aria-hidden="true">${on
+    ? html`<rect x="3.5" y="12" width="4.4" height="8.5" rx="1.3" fill="currentColor"/><rect x="9.8" y="7" width="4.4" height="13.5" rx="1.3" fill="currentColor"/><rect x="16.1" y="3.5" width="4.4" height="17" rx="1.3" fill="currentColor"/>`
+    : html`<rect x="4.2" y="12.6" width="3.4" height="7.4" rx="1.1" fill="none" stroke="currentColor" stroke-width="1.5"/><rect x="10.3" y="7.6" width="3.4" height="12.4" rx="1.1" fill="none" stroke="currentColor" stroke-width="1.5"/><rect x="16.4" y="4.1" width="3.4" height="15.9" rx="1.1" fill="none" stroke="currentColor" stroke-width="1.5"/>`}</svg>`,
+};
+
+function Money({ value }){
+  const s = money(Math.abs(value)), i = s.lastIndexOf('.');
+  return html`${value < 0 ? '−' : ''}${s.slice(0, i)}<span class="cents">${s.slice(i)}</span>`;
+}
+const Seg = ({ options, value, onChange, label }) => html`<div class="seg" role="group" aria-label=${label || ''}>${options.map(o => html`<button type="button" key=${o.value} aria-pressed=${String(value === o.value)} onClick=${() => onChange(o.value)}>${o.label}</button>`)}</div>`;
+const Switch = ({ checked, onChange, label }) => html`<button type="button" role="switch" class="switch" aria-checked=${String(!!checked)} aria-label=${label} onClick=${() => onChange(!checked)}></button>`;
+function AmountInput({ value, onValue, label, placeholder }){
+  return html`<span class="amount-wrap"><span aria-hidden="true">$</span><input class="plain" inputmode="decimal" autocomplete="off" aria-label=${label} placeholder=${placeholder || '0.00'} value=${value}
+    onInput=${e => onValue(e.currentTarget.value)}
+    onBlur=${e => { const v = e.currentTarget.value; if (v.includes('+')){ const n = parseAmount(v); if (isFinite(n)) onValue(String(n)); } }} /></span>`;
+}
+function useWidth(){
+  const ref = useRef(null);
+  const [w, setW] = useState(0);
+  useEffect(() => {
+    const el = ref.current; if (!el) return;
+    const measure = () => { const cw = Math.round(el.getBoundingClientRect().width); if (cw > 0) setW(cw); };
+    measure();
+    if (typeof ResizeObserver !== 'undefined'){ const ro = new ResizeObserver(measure); ro.observe(el); return () => ro.disconnect(); }
+    window.addEventListener('resize', measure); return () => window.removeEventListener('resize', measure);
+  }, []);
+  return [ref, w || 320];
+}
+/* Scrub a chart by pointer or arrow keys; touch selections fade after a moment */
+function useScrub(n, toIndex){
+  const [sel, setSel] = useState(null);
+  const timer = useRef(0);
+  useEffect(() => () => clearTimeout(timer.current), []);
+  const pick = e => {
+    const r = e.currentTarget.getBoundingClientRect();
+    setSel(Math.max(0, Math.min(n - 1, toIndex(e.clientX - r.left))));
+    clearTimeout(timer.current);
+    if (e.pointerType !== 'mouse') timer.current = setTimeout(() => setSel(null), 4000);
+  };
+  return {
+    sel, setSel,
+    handlers: {
+      onPointerDown: pick,
+      onPointerMove: e => { if (e.pointerType === 'mouse' || e.buttons) pick(e); },
+      onPointerLeave: e => { if (e.pointerType === 'mouse') setSel(null); },
+      onKeyDown: e => {
+        if (e.key === 'ArrowRight' || e.key === 'ArrowLeft'){ e.preventDefault(); const dir = e.key === 'ArrowRight' ? 1 : -1; setSel(s => s == null ? (dir > 0 ? 0 : n - 1) : Math.max(0, Math.min(n - 1, s + dir))); }
+        else if (e.key === 'Escape') setSel(null);
+      },
+      onBlur: () => setSel(null),
+    },
+  };
+}
+const escStack = [];
+function Sheet({ title, onClose, right, left, tall, children }){
+  const ref = useRef(null);
+  const closeRef = useRef(onClose);
+  closeRef.current = onClose;
+  useEffect(() => {
+    const h = () => closeRef.current();
+    escStack.push(h);
+    try { ref.current && ref.current.focus({ preventScroll:true }); } catch (e) {}
+    return () => { const i = escStack.indexOf(h); if (i >= 0) escStack.splice(i, 1); };
+  }, []);
+  return html`<div class="sheet-wrap" role="dialog" aria-modal="true" aria-label=${title}>
+    <div class="sheet-backdrop" onClick=${() => closeRef.current()}></div>
+    <div class=${'sheet' + (tall ? ' tall' : '')} ref=${ref} tabindex="-1">
+      <div class="sheet-head">
+        <div class="sheet-left">${left !== undefined ? left : html`<button class="text-btn" onClick=${() => closeRef.current()}>Cancel</button>`}</div>
+        <div class="sheet-title">${title}</div>
+        <div class="sheet-right">${right || ''}</div>
+      </div>
+      <div class="sheet-body">${children}</div>
+    </div>
+  </div>`;
+}
+
+/* ---------- Budget: hero + pace ---------- */
+function Hero({ p, today }){
+  const { inc, sp } = periodStats(p);
+  const left = round2(inc - sp);
+  const info = daysInfo(p, today);
+  const cats = p.categories.map(c => ({ c, v: catSpent(c) })).filter(x => x.v > 0).sort((a,b) => b.v - a.v);
+  const scale = inc > 0 ? Math.max(inc, sp) : sp;
+  let label, amount, tone = '', sub;
+  if (inc > 0 && left >= 0){
+    label = 'Left to spend'; amount = left;
+    sub = info.state === 'active' ? (info.remaining === 1 ? `It’s the last day of this period.` : `About ${money0(left / info.remaining)} a day for the next ${info.remaining} days`)
+      : info.state === 'future' ? `Of ${money(inc)} coming in` : `Of ${money(inc)} this period`;
+  } else if (inc > 0){ label = 'Over by'; amount = -left; tone = 'tone-bad'; sub = `You’ve spent ${money(sp)} of ${money(inc)}.`; }
+  else { label = 'Spent this period'; amount = sp; sub = 'Add your pay below to see what’s left.'; }
+  const barLabel = cats.map(x => `${x.c.name} ${money0(x.v)}`).join(', ');
+  return html`<section class="card hero" aria-label="Period summary">
+    <div class="hero-label">${label}</div>
+    <div class=${'hero-amt ' + tone}><${Money} value=${amount} /></div>
+    <div class="hero-sub">${sub}</div>
+    ${scale > 0 && html`<div>
+      <div class="sbar" role="img" aria-label=${'Spending by category: ' + (barLabel || 'none yet')}>
+        ${cats.map(x => html`<i key=${x.c.id} style=${{ width: (x.v / scale * 100) + '%', background: cvar(x.c.color) }}></i>`)}
+        ${inc > 0 && left > 0 ? html`<i class="rest"></i>` : null}
+      </div>
+      <div class="legend">
+        ${cats.slice(0, 5).map(x => html`<span key=${x.c.id}><i class="dot" style=${{ background: cvar(x.c.color) }}></i>${x.c.name} ${money0(x.v)}</span>`)}
+        ${cats.length > 5 ? html`<span>${cats.length - 5} more</span>` : null}
+        ${inc > 0 && left > 0 ? html`<span><i class="dot" style="background:var(--fill);box-shadow:inset 0 0 0 1px var(--label3)"></i>Left ${money0(left)}</span>` : null}
+      </div>
+    </div>`}
+  </section>`;
+}
+
+function PaceCard({ p, today, height }){
+  const H = height || 150;
+  const [ref, W] = useWidth();
+  const d = useMemo(() => paceData(p, today), [p, today]);
+  const pl = 4, pr = 42, pt = 12, pb = 24, pw = Math.max(40, W - pl - pr), ph = H - pt - pb;
+  const scrub = useScrub(d.n, x => Math.floor((x - pl) / pw * d.n));
+  const gid = useMemo(() => 'g' + uid(), []);
+  const { top, ticks } = niceScale(Math.max(d.base, d.cum[d.n - 1] || 0, 1));
+  const X = t => pl + t / d.n * pw, Y = v => pt + ph - v / top * ph;
+  const pts = [[X(0), Y(0)]];
+  for (let i = 0; i <= d.upto; i++) pts.push([X(i + 1), Y(d.cum[i])]);
+  const line = pts.map((q, i) => (i ? 'L' : 'M') + q[0].toFixed(1) + ' ' + q[1].toFixed(1)).join('');
+  const area = d.upto >= 0 ? `${line}L${X(d.upto + 1).toFixed(1)} ${Y(0)}L${X(0)} ${Y(0)}Z` : '';
+  const st = paceStatus(d);
+  const sel = scrub.sel;
+  let headline = st.title, detail = st.detail, tone = st.tone;
+  if (sel != null){
+    const date = addDays(p.start, sel);
+    headline = fmtDayLong(date); tone = '';
+    detail = sel <= d.upto ? `${money(d.cum[sel])} spent by then${d.base ? `, pace ${money0(d.ideal(sel + 1))}` : ''}` : (d.base ? `Pace by then ${money0(d.ideal(sel + 1))}` : 'Still to come');
+  }
+  const showToday = d.ti >= 0 && d.ti < d.n && X(d.upto + 1) > pl + 46 && X(d.upto + 1) < pl + pw - 46;
+  return html`<section class="card chart-card">
+    <div class="chart-title">Spending pace</div>
+    <div class=${'chart-headline ' + (tone ? 'tone-' + tone : '')} aria-live="polite">${headline}</div>
+    <div class="chart-detail">${detail}</div>
+    <div class="chart" ref=${ref} tabindex="0" aria-label="Spending pace chart. Use the arrow keys to step through days." ...${scrub.handlers}>
+      <svg width=${W} height=${H} role="img" aria-label=${`${st.title}. ${st.detail}`}>
+        <defs><linearGradient id=${gid} x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:var(--blue);stop-opacity:.26"/><stop offset="1" style="stop-color:var(--blue);stop-opacity:0"/></linearGradient></defs>
+        ${ticks.map(v => html`<g key=${v}><line class=${v === 0 ? 'zero' : 'gl'} x1=${pl} x2=${pl + pw} y1=${Y(v)} y2=${Y(v)} /><text class="axis" x=${pl + pw + 7} y=${Y(v) + 4}>${compact(v)}</text></g>`)}
+        ${d.base > 0 ? html`<line class="pace-line" x1=${X(0)} y1=${Y(d.fixedBase)} x2=${X(d.n)} y2=${Y(d.base)} />` : null}
+        ${area ? html`<path d=${area} fill=${`url(#${gid})`} />` : null}
+        ${d.upto >= 0 ? html`<path class="actual-line" d=${line} />` : null}
+        ${d.upto >= 0 && d.ti < d.n ? html`<circle cx=${X(d.upto + 1)} cy=${Y(d.cum[d.upto])} r="5" style="fill:var(--blue);stroke:var(--card);stroke-width:2.5" />` : null}
+        ${sel != null ? html`<g>
+          <line class="sel-line" x1=${X(sel + 1)} x2=${X(sel + 1)} y1=${pt - 4} y2=${pt + ph} />
+          ${d.base > 0 ? html`<circle cx=${X(sel + 1)} cy=${Y(d.ideal(sel + 1))} r="3.5" style="fill:var(--card);stroke:var(--label2);stroke-width:1.5" />` : null}
+          ${sel <= d.upto ? html`<circle cx=${X(sel + 1)} cy=${Y(d.cum[sel])} r="4.5" style="fill:var(--blue);stroke:var(--card);stroke-width:2" />` : null}
+        </g>` : null}
+        <text class="axis" x=${pl} y=${H - 5}>${fmtDay(p.start)}</text>
+        <text class="axis" x=${pl + pw} y=${H - 5} text-anchor="end">${fmtDay(p.end)}</text>
+        ${showToday ? html`<text class="axis" x=${X(d.upto + 1)} y=${H - 5} text-anchor="middle" style="fill:var(--blue);font-weight:600">Today</text>` : null}
+      </svg>
+    </div>
+    <div class="chart-legend">
+      <span><svg width="18" height="4" aria-hidden="true"><path d="M1 2h16" style="stroke:var(--blue);stroke-width:3;stroke-linecap:round"/></svg>Spent</span>
+      ${d.base > 0 ? html`<span><svg width="18" height="4" aria-hidden="true"><path d="M1 2h16" style="stroke:var(--label3);stroke-width:2;stroke-dasharray:3 3"/></svg>${d.basis === 'income' ? 'Even pace to your pay' : 'Even pace to your targets'}</span>` : null}
+    </div>
+  </section>`;
+}
+
+/* ---------- Budget: income + categories ---------- */
+function QuickAdd({ p, today, onAdd }){
+  const [amt, setAmt] = useState('');
+  const [name, setName] = useState('');
+  const [date, setDate] = useState('');
+  const [showDate, setShowDate] = useState(false);
+  const amtRef = useRef(null);
+  const n = parseAmount(amt), valid = isFinite(n) && n > 0;
+  const fallback = clampDate(today, p.start, p.end);
+  const eff = date || fallback;
+  const custom = eff !== today;
+  const submit = () => {
+    if (!valid){ amtRef.current && amtRef.current.focus(); return; }
+    onAdd({ id: uid(), amount: n, title: name.trim(), date: eff });
+    setAmt(''); setName('');
+    amtRef.current && amtRef.current.focus();
+  };
+  const onKey = e => { if (e.key === 'Enter'){ e.preventDefault(); submit(); } };
+  return html`<div>
+    <div class="quick">
+      <label class="field amt-field"><span class="pre" aria-hidden="true">$</span><input ref=${amtRef} inputmode="decimal" autocomplete="off" placeholder="0.00" aria-label="Amount" value=${amt} onInput=${e => setAmt(e.currentTarget.value)} onKeyDown=${onKey} /></label>
+      <label class="field name-field"><input placeholder="Name" aria-label="Expense name, optional" autocomplete="off" value=${name} onInput=${e => setName(e.currentTarget.value)} onKeyDown=${onKey} /></label>
+      <button type="button" class=${'date-chip' + (custom ? ' set' : '')} aria-expanded=${String(showDate)} aria-label=${custom ? `Date is ${fmtDayLong(eff)}. Change date` : 'Date is today. Change date'} onClick=${() => setShowDate(v => !v)}>${custom ? fmtDay(eff) : Icon.cal()}</button>
+      <button type="button" class="add-btn" aria-label="Add expense" disabled=${!valid} onClick=${submit}>${Icon.plus(22)}</button>
+    </div>
+    ${showDate ? html`<div class="date-row">
+      <label class="field"><input type="date" aria-label="Expense date" value=${eff} onChange=${e => e.currentTarget.value && setDate(e.currentTarget.value)} /></label>
+      ${date ? html`<button type="button" class="text-btn small" onClick=${() => { setDate(''); setShowDate(false); }}>${today === fallback ? 'Use today' : 'Reset'}</button>` : null}
+    </div>` : null}
+  </div>`;
+}
+
+function CategoryCard({ c, p, dispatch, open, ask, notify, today }){
+  const [expanded, setExpanded] = useState(false);
+  const [bump, setBump] = useState(0);
+  const spent = catSpent(c), t = hasTarget(c), over = t && spent > c.target + 0.004;
+  const fill = t ? Math.min(100, spent / c.target * 100) : 0;
+  const barColor = over ? 'var(--red)' : cvar(c.color);
+  const sorted = [...c.expenses].sort((a,b) => b.date.localeCompare(a.date) || 0);
+  const idx = p.categories.findIndex(x => x.id === c.id);
+  const editCat = () => open(close => html`<${CategorySheet} close=${close} cat=${c} ask=${ask}
+    canUp=${idx > 0} canDown=${idx < p.categories.length - 1} onMove=${dir => dispatch({ type:'moveCat', id:c.id, dir })}
+    onSave=${cat => dispatch({ type:'saveCat', cat })}
+    onDelete=${() => { dispatch({ type:'delCat', id:c.id }); notify(`${c.name} deleted`, () => dispatch({ type:'restoreCat', cat:c, index:idx })); }} />`);
+  const editExp = x => open(close => html`<${ExpenseSheet} close=${close} expense=${x} catId=${c.id} categories=${p.categories}
+    onSave=${(exp, catId) => dispatch({ type:'updExp', expense:exp, catId })}
+    onDelete=${() => { const i = c.expenses.findIndex(e => e.id === x.id); dispatch({ type:'delExp', catId:c.id, id:x.id }); notify('Expense deleted', () => dispatch({ type:'restoreExp', catId:c.id, index:i, expense:x })); }} />`);
+  let sub;
+  if (t) sub = over ? html`<span class="tone-bad">Over by ${money(spent - c.target)}</span>` : html`<span>${money(c.target - spent)} left of ${money0(c.target)}</span>`;
+  else sub = html`<span>${c.expenses.length ? `${c.expenses.length} expense${c.expenses.length === 1 ? '' : 's'}` : 'No target, just tracking'}</span>`;
+  return html`<article class="card cat" style=${{ '--cc': cvar(c.color) }}>
+    <button class="cat-head" aria-expanded=${String(expanded)} onClick=${() => setExpanded(x => !x)}>
+      <span class="tile" aria-hidden="true">${c.emoji}</span>
+      <div class="cat-main">
+        <div class="cat-line"><span class="cat-name">${c.name}${c.fixed ? html`<span class="badge">Bill</span>` : null}</span><span key=${'b' + bump} class=${'cat-amt' + (bump ? ' bump' : '')}>${money(spent)}</span></div>
+        <div class="cat-sub">${sub}<span class=${'chev' + (expanded ? ' open' : '')}>${Icon.chev()}</span></div>
+      </div>
+    </button>
+    ${t ? html`<div class="bar" role="progressbar" aria-label=${`${c.name} spending`} aria-valuemin="0" aria-valuemax=${c.target} aria-valuenow=${spent}><i style=${{ width: fill + '%', background: barColor }}></i></div>` : null}
+    <${QuickAdd} p=${p} today=${today} onAdd=${exp => { dispatch({ type:'addExp', catId:c.id, expense:exp }); setBump(b => b + 1); }} />
+    ${expanded ? html`<div class="exp-list">
+      ${sorted.length === 0 ? html`<p class="help" style="padding:10px 2px 6px">No expenses yet. Add one above.</p>` : sorted.map(x => html`<button class="exp" key=${x.id} onClick=${() => editExp(x)}>
+        <span class=${'exp-title' + (x.title ? '' : ' untitled')}>${x.title || 'Expense'}</span>
+        <span class="exp-date">${fmtDay(x.date)}</span>
+        <span class="exp-amt">${money(x.amount)}</span>
+        <span class="chev">${Icon.chev()}</span>
+      </button>`)}
+      <div class="cat-foot"><button class="text-btn small" onClick=${editCat}>Edit category</button></div>
+    </div>` : null}
+  </article>`;
+}
+
+function PeriodEditor({ p, dispatch, open, ask, notify, today }){
+  const usedColors = p.categories.map(c => c.color);
+  const addCat = () => open(close => html`<${CategorySheet} close=${close} ask=${ask} usedColors=${usedColors} onSave=${cat => dispatch({ type:'saveCat', cat })} />`);
+  return html`<div>
+    <div class="section-head"><h2 class="section-title">Income</h2><span class="section-aside">${money(incomeTotal(p))}</span></div>
+    <div class="list">
+      <div class="row">
+        <input class="plain" aria-label="Main income name" placeholder="Main income" value=${p.income.main.label} onInput=${e => dispatch({ type:'mainIncome', patch:{ label: e.currentTarget.value } })} />
+        <${AmountInput} label="Main income amount" value=${p.income.main.amount} onValue=${v => dispatch({ type:'mainIncome', patch:{ amount: v } })} />
+      </div>
+      ${p.income.extras.map((x, i) => html`<div class="row" key=${x.id}>
+        <button class="minus" aria-label=${'Remove ' + (x.label || 'extra income')} onClick=${() => { dispatch({ type:'delExtra', id:x.id }); notify('Income removed', () => dispatch({ type:'restoreExtra', item:x, index:i })); }}>${Icon.minus()}</button>
+        <input class="plain" aria-label="Extra income name" placeholder="Extra income" value=${x.label} onInput=${e => dispatch({ type:'setExtra', id:x.id, patch:{ label: e.currentTarget.value } })} />
+        <${AmountInput} label="Extra income amount" value=${x.amount} onValue=${v => dispatch({ type:'setExtra', id:x.id, patch:{ amount: v } })} />
+      </div>`)}
+      <div class="row"><button class="add-link" onClick=${() => dispatch({ type:'addExtra' })}>${Icon.plusCircle()}Add extra income</button></div>
+    </div>
+    <div class="section-head"><h2 class="section-title">Categories</h2><button class="btn-sm" onClick=${addCat}>${Icon.plus(16)}Add</button></div>
+    <div class="stack">
+      ${p.categories.length === 0 ? html`<div class="card empty-card"><h3>No categories yet</h3><p>Add one for each thing you spend on, like groceries or fuel.</p><button class="btn tinted" style="margin-top:14px" onClick=${addCat}>Add a category</button></div>` : null}
+      ${p.categories.map(c => html`<${CategoryCard} key=${c.id} c=${c} p=${p} dispatch=${dispatch} open=${open} ask=${ask} notify=${notify} today=${today} />`)}
+    </div>
+  </div>`;
+}
+
+function SetupCard({ main, onDone }){
+  const [len, setLen] = useState(main.current.length);
+  const [start, setStart] = useState(main.current.start);
+  return html`<section class="card setup">
+    <h2>Set up your budget</h2>
+    <p>Choose how often it resets and the day it starts. Payday usually works best.</p>
+    <div class="group-label">Resets</div>
+    <${Seg} label="Budget length" options=${LEN_OPTIONS} value=${len} onChange=${setLen} />
+    <div class="group-label" style="margin-top:16px">First day</div>
+    <label class="field"><input type="date" aria-label="First day of the budget" value=${start} onChange=${e => e.currentTarget.value && setStart(e.currentTarget.value)} /></label>
+    <p class="help">Runs ${fmtRange(start, periodEnd(start, len), true)}, then restarts ${len === 'monthly' ? `on the ${ordinal(parseISO(start).getDate())} of each month` : len === 'weekly' ? `every ${WEEKDAYS[parseISO(start).getDay()]}` : `every second ${WEEKDAYS[parseISO(start).getDay()]}`}.</p>
+    <button class="btn primary" style="margin-top:16px" onClick=${() => onDone(len, start)}>Start budgeting</button>
+  </section>`;
+}
+
+function BudgetScreen(props){
+  const { main, dispatch, today, open, ask, notify, onSetup, openSettings, openRollover } = props;
+  const p = main.current, info = daysInfo(p, today);
+  return html`<div>
+    <header class="top">
+      <div>
+        <h1 class="large-title">${fmtRange(p.start, p.end)}</h1>
+        <div class="meta-row"><span class="chip">${LEN_LABEL[p.length]}</span><span class=${'days ' + info.tone}>${info.label}</span></div>
+      </div>
+      <button class="icon-btn" aria-label="Settings" onClick=${openSettings}>${Icon.more()}</button>
+    </header>
+    <div class="stack">
+      ${!main.setupDone ? html`<${SetupCard} main=${main} onDone=${onSetup} />` : null}
+      ${main.setupDone && info.state === 'ended' ? html`<div class="banner" role="status"><p>This period has finished. Add anything you missed, then start the next one.</p><button class="btn-sm" onClick=${openRollover}>Start next</button></div>` : null}
+      <${Hero} p=${p} today=${today} />
+      <${PaceCard} p=${p} today=${today} height=${140} />
+    </div>
+    <${PeriodEditor} p=${p} dispatch=${dispatch} open=${open} ask=${ask} notify=${notify} today=${today} />
+    <button class="btn primary rollover" onClick=${openRollover}>Start next period</button>
+    <p class="help center">Saves this period to Analytics and starts a fresh one with the same categories and targets.</p>
+  </div>`;
+}
+
+/* ---------- sheets ---------- */
+function ExpenseSheet({ close, expense, catId, categories, onSave, onDelete }){
+  const [amt, setAmt] = useState(String(expense.amount));
+  const [title, setTitle] = useState(expense.title || '');
+  const [date, setDate] = useState(expense.date);
+  const [cat, setCat] = useState(catId);
+  const n = parseAmount(amt), valid = isFinite(n) && n > 0;
+  const save = () => { if (!valid) return; onSave({ ...expense, amount: n, title: title.trim(), date }, cat); close(); };
+  return html`<${Sheet} title="Edit expense" onClose=${close} right=${html`<button class="text-btn strong" disabled=${!valid} onClick=${save}>Save</button>`}>
+    <div class="form">
+      <div class="big-amount"><span aria-hidden="true">$</span><input inputmode="decimal" aria-label="Amount" autocomplete="off" value=${amt} size=${Math.max(4, amt.length + 1)} onInput=${e => setAmt(e.currentTarget.value)} onKeyDown=${e => e.key === 'Enter' && save()} /></div>
+      <div class="list">
+        <div class="row"><input class="plain" aria-label="Name" placeholder="Name (optional)" value=${title} onInput=${e => setTitle(e.currentTarget.value)} onKeyDown=${e => e.key === 'Enter' && save()} /></div>
+        <label class="row"><span class="row-label">Date</span><input class="plain right" type="date" value=${date} onChange=${e => e.currentTarget.value && setDate(e.currentTarget.value)} /></label>
+        <label class="row"><span class="row-label">Category</span><select class="plain right" value=${cat} onChange=${e => setCat(e.currentTarget.value)}>${categories.map(c => html`<option key=${c.id} value=${c.id} selected=${c.id === cat}>${c.emoji} ${c.name}</option>`)}</select></label>
+      </div>
+      <button class="btn danger" onClick=${() => { onDelete(); close(); }}>Delete expense</button>
+    </div>
+  <//>`;
+}
+
+function CategorySheet({ close, cat, onSave, onDelete, ask, usedColors, canUp, canDown, onMove }){
+  const isNew = !cat;
+  const firstFree = COLORS.find(c => !(usedColors || []).includes(c)) || 'blue';
+  const [name, setName] = useState(cat ? cat.name : '');
+  const [emoji, setEmoji] = useState(cat ? cat.emoji : '🛒');
+  const [color, setColor] = useState(cat ? cat.color : firstFree);
+  const [useTarget, setUseTarget] = useState(cat ? hasTarget(cat) : true);
+  const [target, setTarget] = useState(cat && cat.target != null ? String(cat.target) : '');
+  const [fixed, setFixed] = useState(cat ? !!cat.fixed : false);
+  const tn = parseAmount(target);
+  const valid = name.trim() && (!useTarget || (isFinite(tn) && tn > 0));
+  const save = () => { if (!valid) return; onSave({ ...(cat || newCategory()), name: name.trim(), emoji, color, target: useTarget ? tn : null, fixed }); close(); };
+  const del = async () => {
+    const count = cat.expenses.length;
+    const ok = await ask({ title:`Delete ${cat.name}?`, message: `${count ? `Its ${count} expense${count === 1 ? '' : 's'} in this period will go too. ` : ''}Saved periods keep their own records.`, confirm:'Delete', destructive:true });
+    if (ok){ onDelete(); close(); }
+  };
+  return html`<${Sheet} title=${isNew ? 'New category' : 'Edit category'} onClose=${close} right=${html`<button class="text-btn strong" disabled=${!valid} onClick=${save}>${isNew ? 'Add' : 'Save'}</button>`}>
+    <div class="form" style=${{ '--cc': cvar(color) }}>
+      <div class="list"><div class="row name-row">
+        <span class="tile" aria-hidden="true">${emoji}</span>
+        <input class="plain" aria-label="Category name" placeholder="Category name" value=${name} onInput=${e => setName(e.currentTarget.value)} onKeyDown=${e => e.key === 'Enter' && save()} />
+      </div></div>
+      <div>
+        <div class="group-label">Icon</div>
+        <div class="emoji-grid" role="group" aria-label="Icon">${EMOJIS.map(e => html`<button type="button" key=${e} aria-pressed=${String(emoji === e)} aria-label=${e} onClick=${() => setEmoji(e)}>${e}</button>`)}</div>
+      </div>
+      <div>
+        <div class="group-label">Colour</div>
+        <div class="swatches" role="group" aria-label="Colour">${COLORS.map(c => html`<button type="button" key=${c} aria-label=${c} aria-pressed=${String(color === c)} style=${{ '--sw': cvar(c) }} onClick=${() => setColor(c)}></button>`)}</div>
+      </div>
+      <div>
+        <div class="list">
+          <div class="row"><span class="row-label">Spending target</span><${Switch} label="Spending target" checked=${useTarget} onChange=${setUseTarget} /></div>
+          ${useTarget ? html`<div class="row"><span class="row-label">Target per period</span><span style="margin-left:auto"><${AmountInput} label="Target per period" value=${target} onValue=${setTarget} /></span></div>` : null}
+        </div>
+        <p class="help">${useTarget ? 'Shows what’s left and warns you when you go over.' : 'Expenses just add up, with no limit.'}</p>
+      </div>
+      <div>
+        <div class="list"><div class="row"><span class="row-label">Bill or fixed cost</span><${Switch} label="Bill or fixed cost" checked=${fixed} onChange=${setFixed} /></div></div>
+        <p class="help">Counted up front in your spending pace, so paying rent on day one doesn’t look like overspending.</p>
+      </div>
+      ${!isNew && (canUp || canDown) ? html`<div class="list">
+        ${canUp ? html`<div class="row"><button class="add-link" onClick=${() => { onMove(-1); close(); }}>Move up the list</button></div>` : null}
+        ${canDown ? html`<div class="row"><button class="add-link" onClick=${() => { onMove(1); close(); }}>Move down the list</button></div>` : null}
+      </div>` : null}
+      ${!isNew ? html`<button class="btn danger" onClick=${del}>Delete category</button>` : null}
+    </div>
+  <//>`;
+}
+
+function RolloverSheet({ close, p, onConfirm }){
+  const [note, setNote] = useState(p.note || '');
+  const [start, setStart] = useState(addDays(p.end, 1));
+  const [carry, setCarry] = useState(true);
+  const st = periodStats(p);
+  const end = periodEnd(start, p.length);
+  return html`<${Sheet} title="Start next period" onClose=${close}>
+    <div class="form">
+      <div>
+        <div class="group-label">${fmtRange(p.start, p.end, true)}</div>
+        <div class="tiles three">
+          <div class="stat mini"><div class="k">Income</div><div class="v">${money0(st.inc)}</div></div>
+          <div class="stat mini"><div class="k">Spent</div><div class="v">${money0(st.sp)}</div></div>
+          <div class="stat mini"><div class="k">${st.net >= 0 ? 'Saved' : 'Over'}</div><div class=${'v ' + (st.net >= 0 ? 'tone-good' : 'tone-bad')}>${money0(Math.abs(st.net))}</div></div>
+        </div>
+      </div>
+      ${p.categories.length ? html`<div class="list sum-list">${p.categories.map(c => { const s = catSpent(c), over = hasTarget(c) && s > c.target; return html`<div class="row" key=${c.id}>
+        <span>${c.emoji}</span><span>${c.name}</span>
+        ${hasTarget(c) ? html`<span class=${'pill ' + (over ? 'bad' : 'good')} style="margin:0 0 0 auto">${over ? `${money0(s - c.target)} over` : Math.abs(s - c.target) < 0.5 ? 'On target' : 'Under'}</span>` : null}
+        <span class="sum-amt">${money(s)}</span>
+      </div>`; })}</div>` : null}
+      <div>
+        <div class="list"><div class="row"><input class="plain" aria-label="Note" placeholder="Add a note, like “car rego due”" value=${note} onInput=${e => setNote(e.currentTarget.value)} /></div></div>
+        <p class="help">Notes show on the period in Analytics.</p>
+      </div>
+      <div>
+        <div class="list">
+          <label class="row"><span class="row-label">Next period starts</span><input class="plain right" type="date" value=${start} onChange=${e => e.currentTarget.value && setStart(e.currentTarget.value)} /></label>
+          <div class="row"><span class="row-label">Carry pay forward</span><${Switch} label="Carry pay forward" checked=${carry} onChange=${setCarry} /></div>
+        </div>
+        <p class="help">Next period runs ${fmtRange(start, end, true)}. ${carry ? `It starts with ${money(num(p.income.main.amount))} as your main income, which you can change.` : 'Main income starts blank.'}</p>
+      </div>
+      <button class="btn primary" onClick=${() => { onConfirm({ note: note.trim(), start, carry }); close(); }}>Save and start next period</button>
+    </div>
+  <//>`;
+}
+
+function PeriodSheet({ close, period, onSave, onDelete, open, ask, notify }){
+  const [draft, setDraft] = useState(() => clone(period));
+  const dispatch = useCallback(a => setDraft(d => periodReducer(d, a)), []);
+  const st = periodStats(draft);
+  const dirty = JSON.stringify(draft) !== JSON.stringify(period);
+  const cancel = async () => { if (!dirty || await ask({ title:'Discard changes?', message:'Your edits to this period won’t be saved.', confirm:'Discard', destructive:true })) close(); };
+  const done = () => { if (dirty) onSave(draft); close(); };
+  const del = async () => { if (await ask({ title:'Delete this period?', message:'Its income and expenses will be removed from Analytics. This can’t be undone.', confirm:'Delete', destructive:true })){ onDelete(period.id); close(); } };
+  return html`<${Sheet} tall title=${fmtRange(draft.start, draft.end, true)} onClose=${cancel}
+      left=${html`<button class="text-btn" onClick=${cancel}>Cancel</button>`}
+      right=${html`<button class="text-btn strong" onClick=${done}>Done</button>`}>
+    <div class="stack">
+      <div class="tiles three">
+        <div class="stat mini"><div class="k">Income</div><div class="v">${money0(st.inc)}</div></div>
+        <div class="stat mini"><div class="k">Spent</div><div class="v">${money0(st.sp)}</div></div>
+        <div class="stat mini"><div class="k">${st.net >= 0 ? 'Saved' : 'Over'}</div><div class=${'v ' + (st.net >= 0 ? 'tone-good' : 'tone-bad')}>${money0(Math.abs(st.net))}</div></div>
+      </div>
+      <div class="list">
+        <label class="row"><span class="row-label">Starts</span><input class="plain right" type="date" value=${draft.start} onChange=${e => { const v = e.currentTarget.value; if (v) dispatch({ type:'dates', start:v, end: v > draft.end ? v : draft.end }); }} /></label>
+        <label class="row"><span class="row-label">Ends</span><input class="plain right" type="date" value=${draft.end} min=${draft.start} onChange=${e => { const v = e.currentTarget.value; if (v && v >= draft.start) dispatch({ type:'dates', end:v }); }} /></label>
+        <div class="row"><input class="plain" aria-label="Note" placeholder="Add a note" value=${draft.note} onInput=${e => dispatch({ type:'note', note: e.currentTarget.value })} /></div>
+      </div>
+    </div>
+    <${PeriodEditor} p=${draft} dispatch=${dispatch} open=${open} ask=${ask} notify=${notify} today=${clampDate(todayISO(), draft.start, draft.end)} />
+    <button class="btn danger" style="margin-top:28px" onClick=${del}>Delete period</button>
+  <//>`;
+}
+
+function SettingsSheet({ close, main, history, storageMode, status, onApply, onTheme, onImport, onErase, ask, notify }){
+  const cur = main.current;
+  const [len, setLen] = useState(cur.length);
+  const [start, setStart] = useState(cur.start);
+  const changed = len !== cur.length || start !== cur.start;
+  const [theme, setThemeLocal] = useState(main.settings.theme);
+  const fileRef = useRef(null);
+  const done = () => { if (changed) onApply(len, start); close(); };
+  const stamp = todayISO();
+  const exportJSON = async () => {
+    const r = await saveFile(`budget-backup-${stamp}.json`, JSON.stringify({ app:'budget-tracker', version:3, exportedAt: new Date().toISOString(), main, history }, null, 2));
+    if (r === 'saved') notify('Backup saved'); else if (r === 'failed') notify('Couldn’t save the file here');
+  };
+  const exportCSV = async () => {
+    const r = await saveFile(`budget-expenses-${stamp}.csv`, toCSV([cur, ...history]));
+    if (r === 'saved') notify('Spreadsheet saved'); else if (r === 'failed') notify('Couldn’t save the file here');
+  };
+  const pickFile = async e => {
+    const f = e.currentTarget.files && e.currentTarget.files[0];
+    e.currentTarget.value = '';
+    if (!f) return;
+    try {
+      const data = JSON.parse(await f.text());
+      const m = normMain(data && data.main);
+      if (!m) throw new Error('bad');
+      const hist = (Array.isArray(data.history) ? data.history : []).map(normPeriod).filter(Boolean);
+      if (await ask({ title:'Replace everything?', message:`This backup has ${hist.length} saved period${hist.length === 1 ? '' : 's'}. It replaces your current budget and history.`, confirm:'Replace', destructive:true })){ onImport(m, hist); close(); }
+    } catch (err) { await ask({ title:'That file isn’t a budget backup', message:'Choose a .json file exported from this app.', confirm:'OK', cancel:'Close' }); }
+  };
+  const erase = async () => { if (await ask({ title:'Erase all data?', message:'Your current budget and every saved period will be deleted. Export a backup first if you might want it.', confirm:'Erase', destructive:true })){ onErase(); close(); } };
+  const where = storageMode === 'cloud' ? 'Saved to your Claude account, so it’s the same on every device you sign in on.'
+    : storageMode === 'local' ? 'Saved in this browser only. Export a backup now and then to keep it safe.'
+    : 'This page can’t save here, so changes last until you close it. Export a backup to keep them.';
+  return html`<${Sheet} title="Settings" onClose=${close} left=${null} right=${html`<button class="text-btn strong" onClick=${done}>Done</button>`}>
+    <div class="form">
+      <div>
+        <div class="group-label">Budget resets</div>
+        <${Seg} label="Budget length" options=${LEN_OPTIONS} value=${len} onChange=${setLen} />
+        <div class="list" style="margin-top:12px"><label class="row"><span class="row-label">Current period starts</span><input class="plain right" type="date" value=${start} onChange=${e => e.currentTarget.value && setStart(e.currentTarget.value)} /></label></div>
+        <p class="help">Runs ${fmtRange(start, periodEnd(start, len), true)}. ${changed ? 'Tap Done to update your current period. Expenses stay where they are.' : 'Missed a few days? Tap the calendar next to any expense to backdate it.'}</p>
+      </div>
+      <div>
+        <div class="group-label">Appearance</div>
+        <${Seg} label="Appearance" options=${[{ value:'auto', label:'Automatic' }, { value:'light', label:'Light' }, { value:'dark', label:'Dark' }]} value=${theme} onChange=${t => { setThemeLocal(t); onTheme(t); }} />
+      </div>
+      <div>
+        <div class="group-label">Your data</div>
+        <div class="list">
+          <div class="row"><button class="add-link" onClick=${exportJSON}>Export backup</button></div>
+          <div class="row"><button class="add-link" onClick=${exportCSV}>Export expenses as a spreadsheet</button></div>
+          <div class="row"><button class="add-link" onClick=${() => fileRef.current && fileRef.current.click()}>Import backup</button><input ref=${fileRef} type="file" accept="application/json,.json" style="display:none" onChange=${pickFile} /></div>
+          <div class="row"><button class="add-link" style="color:var(--red)" onClick=${erase}>Erase all data</button></div>
+        </div>
+        <p class="help">${where}${status.state === 'error' ? ' The last save didn’t go through.' : ''}</p>
+      </div>
+    </div>
+  <//>`;
+}
+
+/* ---------- Analytics: this period ---------- */
+function DailyCard({ p, today }){
+  const [ref, W] = useWidth();
+  const bills = p.categories.filter(c => c.fixed && c.expenses.length);
+  const [showBills, setShowBills] = useState(false);
+  const incl = showBills || !bills.length;
+  const d = useMemo(() => paceData(incl ? p : { ...p, categories: p.categories.filter(c => !c.fixed) }, today), [p, today, incl]);
+  const H = 150, pl = 4, pr = 42, pt = 12, pb = 24, pw = Math.max(40, W - pl - pr), ph = H - pt - pb;
+  const slot = pw / d.n, bw = Math.max(2, Math.min(22, slot * 0.62));
+  const scrub = useScrub(d.n, x => Math.floor((x - pl) / slot));
+  const elapsed = d.upto + 1;
+  const past = d.daily.slice(0, Math.max(0, elapsed));
+  const avg = elapsed > 0 ? past.reduce((a,b) => a + b, 0) / elapsed : 0;
+  let maxI = -1; past.forEach((v, i) => { if (v > 0 && (maxI < 0 || v > past[maxI])) maxI = i; });
+  const { top, ticks } = niceScale(Math.max(1, ...d.daily));
+  const Y = v => pt + ph - v / top * ph;
+  const sel = scrub.sel;
+  let headline, detail;
+  if (sel != null){
+    const date = addDays(p.start, sel), items = d.byDay[sel];
+    headline = fmtDayLong(date);
+    if (sel > d.upto && d.ti >= 0) detail = 'Still to come';
+    else if (!items.length) detail = 'Nothing spent';
+    else { const names = items.slice().sort((a,b) => b.amount - a.amount).slice(0, 2).map(x => x.title || x.cat.name).join(', '); detail = `${money(d.daily[sel])} on ${names}${items.length > 2 ? ` and ${items.length - 2} more` : ''}`; }
+  } else if (elapsed <= 0){ headline = 'Nothing yet'; detail = 'Daily spending shows once the period starts.'; }
+  else { headline = `${money0(avg)} a day`; detail = maxI >= 0 ? `Biggest day was ${fmtDayLong(addDays(p.start, maxI))} at ${money(past[maxI])}.` : 'No spending logged yet.'; }
+  return html`<section class="card chart-card">
+    <div class="card-head"><div class="chart-title">Daily spending${incl || !bills.length ? '' : ', without bills'}</div>${bills.length ? html`<button class="btn-sm" aria-pressed=${String(showBills)} onClick=${() => setShowBills(v => !v)}>${showBills ? 'Hide bills' : 'Show bills'}</button>` : null}</div>
+    <div class="chart-headline" aria-live="polite">${headline}</div>
+    <div class="chart-detail">${detail}</div>
+    <div class="chart" ref=${ref} tabindex="0" aria-label="Daily spending chart. Use the arrow keys to step through days." ...${scrub.handlers}>
+      <svg width=${W} height=${H} role="img" aria-label=${`Daily spending. Average ${money0(avg)} a day.`}>
+        ${ticks.map(v => html`<g key=${v}><line class=${v === 0 ? 'zero' : 'gl'} x1=${pl} x2=${pl + pw} y1=${Y(v)} y2=${Y(v)} /><text class="axis" x=${pl + pw + 7} y=${Y(v) + 4}>${compact(v)}</text></g>`)}
+        ${sel != null ? html`<rect x=${pl + sel * slot} y=${pt - 4} width=${slot} height=${ph + 4} rx="4" style="fill:var(--fill2)" />` : null}
+        ${d.daily.map((v, i) => {
+          const x = pl + i * slot + (slot - bw) / 2;
+          if (i > d.upto) return html`<rect key=${i} x=${x} y=${Y(0) - 2} width=${bw} height="2" rx="1" style="fill:var(--fill)" />`;
+          const h = v > 0 ? Math.max(2, v / top * ph) : 0;
+          const dim = sel != null && sel !== i;
+          return h ? html`<rect key=${i} x=${x} y=${Y(0) - h} width=${bw} height=${h} rx=${Math.min(3, bw / 2)} style=${`fill:var(--blue);opacity:${dim ? .35 : 1}`} />` : null;
+        })}
+        ${avg > 0 ? html`<g><line class="avg-line" x1=${pl} x2=${pl + pw} y1=${Y(avg)} y2=${Y(avg)} /><text class="axis" x=${pl + 2} y=${Y(avg) - 5} style="fill:var(--green);font-weight:600">Avg</text></g>` : null}
+        <text class="axis" x=${pl} y=${H - 5}>${fmtDay(p.start)}</text>
+        <text class="axis" x=${pl + pw} y=${H - 5} text-anchor="end">${fmtDay(p.end)}</text>
+      </svg>
+    </div>
+  </section>`;
+}
+
+function BudgetVsActual({ p }){
+  const rows = p.categories.filter(hasTarget).map(c => { const sp = catSpent(c); return { c, s: sp, r: sp / c.target }; }).sort((a,b) => b.r - a.r);
+  const loose = p.categories.filter(c => !hasTarget(c));
+  const M = Math.min(1.5, Math.max(1, ...rows.map(x => x.r)));
+  const overN = rows.filter(x => x.s > x.c.target + 0.004).length;
+  const headline = !rows.length ? 'No targets set' : overN ? `${overN} of ${rows.length} over target` : `All ${rows.length} within target`;
+  return html`<section class="card chart-card">
+    <div class="chart-title">Targets</div>
+    <div class=${'chart-headline ' + (rows.length ? (overN ? 'tone-bad' : 'tone-good') : '')}>${headline}</div>
+    <div class="chart-detail">${rows.length ? 'Each bar is spending against its own target. The ticks line up at 100%.' : 'Give a category a target to track it here.'}</div>
+    ${rows.length ? html`<div class="bullets">${rows.map(({ c, s: sp, r }) => { const over = sp > c.target + 0.004; return html`<div key=${c.id} style=${{ '--cc': cvar(c.color) }}>
+      <div class="bl-top"><span class="bl-name"><span aria-hidden="true">${c.emoji}</span>${c.name}</span><span class="bl-val"><b class=${over ? 'tone-bad' : ''}>${pct(r)}</b>  ${money0(sp)} of ${money0(c.target)}</span></div>
+      <div class="bl-track" role="img" aria-label=${`${c.name}: ${money0(sp)} of ${money0(c.target)}, ${pct(r)}`}>
+        <div class="bl-target" style=${{ width: (1 / M * 100) + '%' }}></div>
+        <div class=${'bl-fill' + (over ? ' over' : '')} style=${{ width: Math.max(sp > 0 ? 1.5 : 0, Math.min(r, M) / M * 100) + '%' }}></div>
+        <div class="bl-mark" style=${{ left: (1 / M * 100) + '%' }}></div>
+      </div>
+    </div>`; })}</div>` : null}
+    ${loose.length ? html`<p class="help" style="padding:14px 0 0">Just tracking: ${loose.map(c => `${c.name} ${money0(catSpent(c))}`).join(', ')}</p>` : null}
+  </section>`;
+}
+
+function DonutCard({ p }){
+  const items = p.categories.map(c => ({ c, v: catSpent(c) })).filter(x => x.v > 0).sort((a,b) => b.v - a.v);
+  const total = items.reduce((s,x) => s + x.v, 0);
+  const [sel, setSel] = useState(null);
+  const S = 196, sw = 26, r = (S - sw) / 2 - 6, C = 2 * Math.PI * r;
+  const gap = items.length > 1 ? 2.5 : 0;
+  const selItem = items.find(x => x.c.id === sel);
+  let acc = 0;
+  const segs = items.map(x => { const len = x.v / total * C; const s = { x, len, off: acc }; acc += len; return s; });
+  return html`<section class="card chart-card">
+    <div class="chart-title">Where it went</div>
+    ${!total ? html`<div class="empty-chart">No spending logged in this period yet.</div>` : html`<div>
+      <div class="donut-wrap">
+        <svg width=${S} height=${S} viewBox=${`0 0 ${S} ${S}`} role="img" aria-label=${'Spending breakdown: ' + items.map(x => `${x.c.name} ${pct(x.v / total)}`).join(', ')}>
+          <g transform=${`rotate(-90 ${S / 2} ${S / 2})`}>
+            ${segs.map(s => { const on = sel === s.x.c.id; return html`<circle key=${s.x.c.id} cx=${S / 2} cy=${S / 2} r=${r} fill="none"
+              style=${`stroke:${cvar(s.x.c.color)};stroke-width:${on ? sw + 8 : sw};opacity:${sel && !on ? .3 : 1};transition:stroke-width .2s,opacity .2s;cursor:pointer`}
+              stroke-dasharray=${`${Math.max(0.5, s.len - gap)} ${C}`} stroke-dashoffset=${-s.off}
+              onClick=${() => setSel(on ? null : s.x.c.id)} />`; })}
+          </g>
+        </svg>
+        <div class="donut-center">
+          <div class="v">${money0(selItem ? selItem.v : total)}</div>
+          <div class="k">${selItem ? `${selItem.c.name}, ${pct(selItem.v / total)}` : 'spent'}</div>
+        </div>
+      </div>
+      <div>${items.map(x => html`<button class="lg-row" key=${x.c.id} aria-pressed=${String(sel === x.c.id)} onClick=${() => setSel(sel === x.c.id ? null : x.c.id)}>
+        <i class="dot" style=${{ background: cvar(x.c.color), width:'10px', height:'10px' }}></i>
+        <span class="lg-name">${x.c.emoji} ${x.c.name}</span>
+        <span class="lg-amt">${money(x.v)}</span>
+        <span class="lg-pct">${pct(x.v / total)}</span>
+      </button>`)}</div>
+    </div>`}
+  </section>`;
+}
+
+/* ---------- Analytics: over time ---------- */
+function SavedPeriods({ history, onOpen }){
+  return html`<div>
+    <div class="section-head" style="padding-top:4px"><h2 class="section-title">Saved periods</h2></div>
+    <div class="scroller">${history.map(h => { const st = periodStats(h); return html`<button class="pcard" key=${h.id} onClick=${() => onOpen(h)} aria-label=${`Open ${fmtRange(h.start, h.end, true)}`}>
+      <div class="r">${fmtRange(h.start, h.end)}</div>
+      <div class="y">${parseISO(h.end).getFullYear()}${h.note ? `, ${h.note}` : ''}</div>
+      <div class="s">Spent ${money0(st.sp)}</div>
+      <span class=${'pill ' + (st.net >= 0 ? 'good' : 'bad')}>${st.net >= 0 ? '+' : '−'}${money0(Math.abs(st.net))}</span>
+    </button>`; })}</div>
+  </div>`;
+}
+
+function SummaryTiles({ history }){
+  const stats = history.map(h => ({ h, ...periodStats(h) }));
+  const total = stats.reduce((a,x) => a + x.net, 0);
+  const best = stats.reduce((b,x) => (!b || x.net > b.net) ? x : b, null);
+  return html`<div class="tiles">
+    <div class="stat"><div class="k">${total >= 0 ? 'Saved in total' : 'Overspent in total'}</div><div class=${'v ' + (total >= 0 ? 'tone-good' : 'tone-bad')}>${money0(Math.abs(total))}</div><div class="sub">Across ${stats.length} period${stats.length === 1 ? '' : 's'}</div></div>
+    <div class="stat"><div class="k">Best period</div><div class=${'v ' + (best.net >= 0 ? 'tone-good' : 'tone-bad')}>${best.net >= 0 ? '+' : '−'}${money0(Math.abs(best.net))}</div><div class="sub">${fmtRange(best.h.start, best.h.end)}</div></div>
+  </div>`;
+}
+
+function IncomeSpendCard({ history, current, onOpen }){
+  const [ref, W] = useWidth();
+  const done = [...history].sort(byStartAsc).slice(-11);
+  const series = [...done.map(p => ({ p, ...periodStats(p), now:false })), { p: current, ...periodStats(current), now:true }];
+  const m = series.length;
+  const H = 190, pl = 4, pr = 42, pt = 12, pb = 26, pw = Math.max(40, W - pl - pr), ph = H - pt - pb;
+  const slot = pw / m, bw = Math.max(4, Math.min(18, slot * 0.3));
+  const [sel, setSel] = useState(null);
+  const { top, ticks } = niceScale(Math.max(1, ...series.map(s => Math.max(s.inc, s.sp))));
+  const Y = v => pt + ph - v / top * ph;
+  const avgInc = done.reduce((a,s) => a + incomeTotal(s), 0) / (done.length || 1);
+  const avgSp = done.reduce((a,s) => a + spentTotal(s), 0) / (done.length || 1);
+  const s = sel != null ? series[sel] : null;
+  const vals = s ? { inc: s.inc, sp: s.sp, net: s.net } : { inc: avgInc, sp: avgSp, net: avgInc - avgSp };
+  const onKey = e => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowLeft'){ e.preventDefault(); const dir = e.key === 'ArrowRight' ? 1 : -1; setSel(x => x == null ? (dir > 0 ? 0 : m - 1) : Math.max(0, Math.min(m - 1, x + dir))); }
+    else if (e.key === 'Escape') setSel(null);
+  };
+  return html`<section class="card chart-card">
+    <div class="readout-head">
+      <div class="chart-title">${s ? (s.now ? 'This period so far' : fmtRange(s.p.start, s.p.end, true)) : `Average of ${done.length} saved period${done.length === 1 ? '' : 's'}`}</div>
+      ${s && !s.now ? html`<button class="text-btn small" onClick=${() => onOpen(s.p)}>Open</button>` : null}
+    </div>
+    <div class="readout" aria-live="polite">
+      <div><div class="k">Income</div><div class="v tone-good">${money0(vals.inc)}</div></div>
+      <div><div class="k">Spent</div><div class="v" style="color:var(--blue)">${money0(vals.sp)}</div></div>
+      <div><div class="k">${vals.net >= 0 ? 'Saved' : 'Over'}</div><div class="v">${money0(Math.abs(vals.net))}</div></div>
+    </div>
+    <div class="chart" ref=${ref} tabindex="0" aria-label="Income and spending by period. Use the arrow keys to choose a period." onKeyDown=${onKey}>
+      <svg width=${W} height=${H} role="img" aria-label="Income and spending for each period">
+        ${ticks.map(v => html`<g key=${v}><line class=${v === 0 ? 'zero' : 'gl'} x1=${pl} x2=${pl + pw} y1=${Y(v)} y2=${Y(v)} /><text class="axis" x=${pl + pw + 7} y=${Y(v) + 4}>${compact(v)}</text></g>`)}
+        ${series.map((it, j) => {
+          const cx = pl + j * slot + slot / 2, dim = sel != null && sel !== j, op = (it.now ? .45 : 1) * (dim ? .35 : 1);
+          const hi = Math.max(it.inc > 0 ? 2 : 0, it.inc / top * ph), hs = Math.max(it.sp > 0 ? 2 : 0, it.sp / top * ph);
+          const showLabel = m <= 6 || (m - 1 - j) % 2 === 0;
+          return html`<g key=${it.p.id}>
+            ${sel === j ? html`<rect x=${pl + j * slot + 2} y=${pt - 6} width=${slot - 4} height=${ph + 6} rx="8" style="fill:var(--fill2)" />` : null}
+            ${hi ? html`<rect x=${cx - bw - 1.5} y=${Y(0) - hi} width=${bw} height=${hi} rx=${Math.min(4, bw / 2)} style=${`fill:var(--green);opacity:${op}`} />` : null}
+            ${hs ? html`<rect x=${cx + 1.5} y=${Y(0) - hs} width=${bw} height=${hs} rx=${Math.min(4, bw / 2)} style=${`fill:var(--blue);opacity:${op}`} />` : null}
+            ${showLabel ? html`<text class="axis" x=${cx} y=${H - 6} text-anchor="middle" style=${it.now ? 'font-weight:600' : ''}>${it.now ? 'Now' : fmtDay(it.p.start)}</text>` : null}
+            <rect x=${pl + j * slot} y=${pt - 6} width=${slot} height=${ph + 6} fill="transparent" style="cursor:pointer" onClick=${() => setSel(sel === j ? null : j)} />
+          </g>`;
+        })}
+      </svg>
+    </div>
+    <div class="chart-legend"><span><i class="dot" style="background:var(--green)"></i>Income</span><span><i class="dot" style="background:var(--blue)"></i>Spent</span><span>Faded bars are this period so far</span></div>
+  </section>`;
+}
+
+function SavingsRateCard({ history }){
+  const [ref, W] = useWidth();
+  const pts = [...history].sort(byStartAsc).slice(-12).map(p => ({ p, ...periodStats(p) })).filter(x => x.rate != null);
+  const m = pts.length;
+  const H = 160, pl = 4, pr = 42, pt = 14, pb = 24, pw = Math.max(40, W - pl - pr), ph = H - pt - pb;
+  const X = j => m === 1 ? pl + pw / 2 : pl + 12 + j / (m - 1) * (pw - 24);
+  const scrub = useScrub(Math.max(1, m), x => m === 1 ? 0 : Math.round((x - pl - 12) / (pw - 24) * (m - 1)));
+  if (!m) return html`<section class="card chart-card"><div class="chart-title">Savings rate</div><div class="empty-chart">Add income to your saved periods to see how much of it you keep.</div></section>`;
+  const rates = pts.map(x => x.rate);
+  const incSum = pts.reduce((a,x) => a + x.inc, 0), avg = pts.reduce((a,x) => a + x.net, 0) / incSum;
+  let lo = Math.min(0, ...rates), hi = Math.max(0.1, ...rates);
+  const span = hi - lo, step = span > 1.2 ? 0.5 : span > 0.6 ? 0.25 : span > 0.3 ? 0.1 : 0.05;
+  lo = Math.floor(lo / step + 1e-9) * step; hi = Math.ceil(hi / step - 1e-9) * step;
+  if (hi - lo < step * 2) hi = lo + step * 2;
+  const Y = r => pt + ph - (r - lo) / (hi - lo) * ph;
+  const ticks = []; for (let v = lo; v <= hi + 1e-9; v += step) ticks.push(Math.round(v * 1000) / 1000);
+  const path = pts.map((x, j) => (j ? 'L' : 'M') + X(j).toFixed(1) + ' ' + Y(x.rate).toFixed(1)).join('');
+  const sel = m ? scrub.sel : null, s = sel != null ? pts[sel] : null;
+  const last = pts[m - 1];
+  return html`<section class="card chart-card">
+    <div class="chart-title">Savings rate</div>
+    <div class=${'chart-headline ' + (s ? '' : (avg >= 0 ? 'tone-good' : 'tone-bad'))} aria-live="polite">${s ? fmtRange(s.p.start, s.p.end, true) : `${pct(avg)} of income kept`}</div>
+    <div class="chart-detail">${s ? `${s.net >= 0 ? 'Saved' : 'Overspent'} ${money0(Math.abs(s.net))} of ${money0(s.inc)}, which is ${pct(s.rate)}.` : `Your last saved period was ${pct(last.rate)}.`}</div>
+    <div class="chart" ref=${ref} tabindex="0" aria-label="Savings rate chart. Use the arrow keys to step through periods." ...${scrub.handlers}>
+      <svg width=${W} height=${H} role="img" aria-label=${`Average savings rate ${pct(avg)}`}>
+        ${ticks.map(v => html`<g key=${v}><line class=${Math.abs(v) < 1e-9 ? 'zero' : 'gl'} x1=${pl} x2=${pl + pw} y1=${Y(v)} y2=${Y(v)} /><text class="axis" x=${pl + pw + 7} y=${Y(v) + 4}>${pct(v)}</text></g>`)}
+        ${m > 1 ? html`<line class="avg-line" x1=${pl} x2=${pl + pw} y1=${Y(avg)} y2=${Y(avg)} />` : null}
+        ${m > 1 ? html`<path d=${path} style="fill:none;stroke:var(--label2);stroke-width:2;stroke-linejoin:round;stroke-linecap:round;opacity:.55" />` : null}
+        ${pts.map((x, j) => html`<circle key=${x.p.id} cx=${X(j)} cy=${Y(x.rate)} r=${sel === j ? 6.5 : 5} style=${`fill:${x.rate >= 0 ? 'var(--green)' : 'var(--red)'};stroke:var(--card);stroke-width:2`} />`)}
+        ${m > 1 ? html`<text class="axis" x=${pl + 2} y=${Y(avg) - 5} style="fill:var(--green);font-weight:600">Avg</text>` : null}
+        ${m ? html`<text class="axis" x=${X(0)} y=${H - 5} text-anchor=${m === 1 ? 'middle' : 'start'}>${fmtDay(pts[0].p.start)}</text>` : null}
+        ${m > 1 ? html`<text class="axis" x=${X(m - 1)} y=${H - 5} text-anchor="end">${fmtDay(last.p.start)}</text>` : null}
+      </svg>
+    </div>
+  </section>`;
+}
+
+function Sparkline({ vals, now, color }){
+  const w = 64, h = 28, k = vals.length + (now != null ? 1 : 0);
+  const max = Math.max(1, ...vals.filter(v => v != null), now || 0);
+  const X = j => k <= 1 ? w / 2 : 3 + j / (k - 1) * (w - 6), Y = v => h - 3 - v / max * (h - 6);
+  let d = '', pen = false;
+  vals.forEach((v, j) => { if (v == null){ pen = false; return; } d += (pen ? 'L' : 'M') + X(j).toFixed(1) + ' ' + Y(v).toFixed(1); pen = true; });
+  const lastJ = vals.length - 1;
+  return html`<svg class="spark" width=${w} height=${h} aria-hidden="true">
+    ${d ? html`<path d=${d} style=${`stroke:${color}`} />` : null}
+    ${lastJ >= 0 && vals[lastJ] != null ? html`<circle cx=${X(lastJ)} cy=${Y(vals[lastJ])} r="2.6" style=${`fill:${color}`} />` : null}
+    ${now != null ? html`<circle cx=${X(k - 1)} cy=${Y(now)} r="2.6" style=${`fill:var(--card);stroke:${color};stroke-width:1.6`} />` : null}
+  </svg>`;
+}
+
+function CategoryTrendsCard({ history, current }){
+  const done = [...history].sort(byStartAsc).slice(-8);
+  const ids = []; const meta = {};
+  for (const c of current.categories){ if (!ids.includes(c.id)) ids.push(c.id); meta[c.id] = c; }
+  for (const p of [...done].reverse()) for (const c of p.categories){ if (!ids.includes(c.id)) ids.push(c.id); if (!meta[c.id]) meta[c.id] = c; }
+  const rows = ids.map(id => {
+    const vals = done.map(p => { const c = p.categories.find(x => x.id === id); return c ? catSpent(c) : null; });
+    const cc = current.categories.find(x => x.id === id);
+    const nn = vals.filter(v => v != null);
+    if (!nn.length) return null;
+    const avg = nn.reduce((a,b) => a + b, 0) / nn.length;
+    let latest = null; for (let j = vals.length - 1; j >= 0; j--) if (vals[j] != null){ latest = vals[j]; break; }
+    const delta = nn.length >= 2 && avg > 0 ? (latest - avg) / avg : null;
+    return { id, c: meta[id], vals, now: cc ? catSpent(cc) : null, avg, delta };
+  }).filter(Boolean).sort((a,b) => b.avg - a.avg);
+  return html`<section class="card chart-card">
+    <div class="chart-title">Categories over time</div>
+    <div class="chart-detail" style="margin-bottom:6px">Average per period. The badge compares your last saved period with that average, and the hollow dot is this period so far.</div>
+    ${rows.length ? rows.map(r => {
+      const cls = r.delta == null ? 'flat' : r.delta > 0.05 ? 'warn' : r.delta < -0.05 ? 'good' : 'flat';
+      const label = r.delta == null ? 'New' : Math.abs(r.delta) <= 0.05 ? 'Steady' : `${r.delta > 0 ? '↑' : '↓'} ${pct(Math.abs(r.delta))}`;
+      return html`<div class="trend" key=${r.id} style=${{ '--cc': cvar(r.c.color) }}>
+        <span class="tile" aria-hidden="true">${r.c.emoji}</span>
+        <div class="trend-main"><div class="trend-name">${r.c.name}</div><div class="trend-sub">Avg ${money0(r.avg)}${r.now != null ? `, now ${money0(r.now)}` : ''}</div></div>
+        <${Sparkline} vals=${r.vals} now=${r.now} color=${cvar(r.c.color)} />
+        <span class=${'pill ' + cls}>${label}</span>
+      </div>`;
+    }) : html`<div class="empty-chart">No category spending saved yet.</div>`}
+  </section>`;
+}
+
+function AnalyticsScreen({ main, history, today, openPeriod }){
+  const [view, setView] = useState('now');
+  const p = main.current;
+  return html`<div>
+    <header class="top"><div><h1 class="large-title">Analytics</h1><div class="meta-row"><span class="days">${view === 'now' ? fmtRange(p.start, p.end, true) : `${history.length} saved period${history.length === 1 ? '' : 's'}`}</span></div></div></header>
+    <${Seg} label="Analytics view" options=${[{ value:'now', label:'This period' }, { value:'time', label:'Over time' }]} value=${view} onChange=${setView} />
+    <div class="stack" style="margin-top:14px">
+      ${view === 'now' ? [
+        html`<${PaceCard} key="pace" p=${p} today=${today} height=${180} />`,
+        html`<${DailyCard} key="daily" p=${p} today=${today} />`,
+        html`<${BudgetVsActual} key="bva" p=${p} />`,
+        html`<${DonutCard} key="donut" p=${p} />`,
+      ] : history.length === 0 ? html`<div class="card empty-card"><h3>Nothing saved yet</h3><p>When a period ends, tap Start next period on the Budget tab. Each saved period adds to the trends here.</p></div>` : [
+        html`<${SavedPeriods} key="saved" history=${history} onOpen=${openPeriod} />`,
+        html`<${SummaryTiles} key="tiles" history=${history} />`,
+        html`<${IncomeSpendCard} key="is" history=${history} current=${p} onOpen=${openPeriod} />`,
+        html`<${SavingsRateCard} key="sr" history=${history} />`,
+        html`<${CategoryTrendsCard} key="ct" history=${history} current=${p} />`,
+      ]}
+    </div>
+  </div>`;
+}
+
+/* ---------- app shell ---------- */
+function Alert({ d, onDone }){
+  return html`<div class="alert-wrap" role="alertdialog" aria-modal="true" aria-labelledby="alert-t">
+    <div class="alert">
+      <div class="alert-body"><h3 id="alert-t">${d.title}</h3>${d.message ? html`<p>${d.message}</p>` : null}</div>
+      <div class="alert-btns">
+        <button onClick=${() => onDone(false)}>${d.cancel || 'Cancel'}</button>
+        <button class=${d.destructive ? 'destructive' : 'strong'} ref=${el => el && !el.dataset.f && (el.dataset.f = '1', el.focus())} onClick=${() => onDone(true)}>${d.confirm || 'OK'}</button>
+      </div>
+    </div>
+  </div>`;
+}
+function Toast({ t, onClose }){
+  useEffect(() => { const id = setTimeout(onClose, 4500); return () => clearTimeout(id); }, [t.id]);
+  return html`<div class="toast" role="status">${t.msg}${t.undo ? html`<button onClick=${() => { t.undo(); onClose(); }}>Undo</button>` : null}</div>`;
+}
+
+function App(){
+  const [ready, setReady] = useState(false);
+  const [main, setMain] = useState(null);
+  const [history, setHistory] = useState([]);
+  const [tab, setTab] = useState('budget');
+  const [today, setToday] = useState(todayISO());
+  const [stack, setStack] = useState([]);
+  const [dialog, setDialog] = useState(null);
+  const [toast, setToast] = useState(null);
+  const [status, setStatus] = useState({ state:'idle' });
+
+  useEffect(() => {
+    store.onStatus = s => setStatus(s);
+    (async () => {
+      const res = await store.init();
+      let m = normMain(res.main);
+      const hist = (res.history || []).map(normPeriod).filter(Boolean).sort(byStartDesc);
+      if (!m) m = freshMain();
+      store.markSaved(m, hist);
+      setMain(m); setHistory(hist); setReady(true);
+    })();
+    const onVis = () => { if (document.visibilityState === 'visible') setToday(todayISO()); else store.flush(); };
+    const onHide = () => store.flush();
+    document.addEventListener('visibilitychange', onVis);
+    window.addEventListener('pagehide', onHide);
+    const iv = setInterval(() => setToday(todayISO()), 60000);
+    return () => { document.removeEventListener('visibilitychange', onVis); window.removeEventListener('pagehide', onHide); clearInterval(iv); };
+  }, []);
+
+  useEffect(() => { if (ready) store.saveMain(main); }, [main, ready]);
+  useEffect(() => { if (ready) store.saveLocal(main, history); }, [main, history, ready]);
+  useEffect(() => {
+    if (!main) return;
+    const t = main.settings.theme, el = document.documentElement;
+    if (t === 'auto') el.removeAttribute('data-theme'); else el.setAttribute('data-theme', t);
+  }, [main && main.settings.theme]);
+  useEffect(() => { document.body.style.overflow = stack.length ? 'hidden' : ''; }, [stack.length]);
+
+  const open = useCallback(renderFn => setStack(s => [...s, { id: uid(), render: renderFn }]), []);
+  const closeTop = useCallback(() => setStack(s => s.slice(0, -1)), []);
+  const ask = useCallback(opts => new Promise(res => setDialog({ ...opts, res })), []);
+  const notify = useCallback((msg, undo) => setToast({ id: uid(), msg, undo }), []);
+
+  useEffect(() => {
+    const k = e => {
+      if (e.key !== 'Escape') return;
+      if (dialog){ dialog.res(false); setDialog(null); return; }
+      const top = escStack[escStack.length - 1]; if (top) top();
+    };
+    window.addEventListener('keydown', k);
+    return () => window.removeEventListener('keydown', k);
+  }, [dialog]);
+
+  const dispatch = useCallback(a => setMain(m => ({ ...m, current: periodReducer(m.current, a) })), []);
+
+  if (!ready) return html`<div class="loading">Loading your budget…</div>`;
+
+  const onSetup = (len, start) => setMain(m => ({ ...m, setupDone:true, settings:{ ...m.settings, length:len }, current:{ ...m.current, start, end: periodEnd(start, len), length: len } }));
+  const applyPeriod = (len, start) => setMain(m => ({ ...m, setupDone:true, settings:{ ...m.settings, length:len }, current:{ ...m.current, start, end: periodEnd(start, len), length: len } }));
+  const setTheme = t => setMain(m => ({ ...m, settings:{ ...m.settings, theme:t } }));
+  const rollover = ({ note, start, carry }) => {
+    const saved = { ...main.current, note, savedAt: new Date().toISOString() };
+    setHistory(h => [saved, ...h.filter(x => x.id !== saved.id)].sort(byStartDesc));
+    store.savePeriod(saved);
+    setMain(m => ({ ...m, setupDone:true, current: newPeriod(start, saved.length, saved, carry) }));
+    try { window.scrollTo({ top:0, behavior:'smooth' }); } catch (e) {}
+    notify('Period saved to Analytics');
+  };
+  const savePeriod = p => { setHistory(h => h.map(x => x.id === p.id ? p : x).sort(byStartDesc)); store.savePeriod(p); notify('Period updated'); };
+  const deletePeriod = id => { setHistory(h => h.filter(x => x.id !== id)); store.deletePeriod(id); notify('Period deleted'); };
+  const importAll = (m, hist) => {
+    const keep = new Set(hist.map(h => h.id));
+    for (const h of history) if (!keep.has(h.id)) store.deletePeriod(h.id);
+    for (const h of hist) store.savePeriod(h);
+    setMain(m); setHistory(hist.sort(byStartDesc)); notify('Backup imported');
+  };
+  const eraseAll = () => {
+    for (const h of history) store.deletePeriod(h.id);
+    setHistory([]); setMain(freshMain()); setTab('budget'); notify('All data erased');
+  };
+  const openPeriod = p => open(close => html`<${PeriodSheet} close=${close} period=${p} onSave=${savePeriod} onDelete=${deletePeriod} open=${open} ask=${ask} notify=${notify} />`);
+  const openSettings = () => open(close => html`<${SettingsSheet} close=${close} main=${main} history=${history} storageMode=${store.mode} status=${status}
+    onApply=${applyPeriod} onTheme=${setTheme} onImport=${importAll} onErase=${eraseAll} ask=${ask} notify=${notify} />`);
+  const openRollover = () => open(close => html`<${RolloverSheet} close=${close} p=${main.current} onConfirm=${rollover} />`);
+  const switchTab = t => { setTab(t); try { window.scrollTo(0, 0); } catch (e) {} };
+
+  const errMsg = status.state !== 'error' ? null
+    : status.code === 'invalid_argument' ? 'You have view-only access here, so changes can’t be saved.'
+    : status.code === 'quota_exceeded' ? 'Storage is full. Export a backup, then delete some old periods.'
+    : status.code === 'local' ? 'This browser’s storage is full, so recent changes may not be kept. Export a backup.'
+    : 'Your last change didn’t save. Check your connection and try again.';
+
+  return html`<div>
+    <main class="app">
+      ${errMsg ? html`<div class="banner error" role="alert" style="margin-top:12px"><p>${errMsg}</p></div>` : null}
+      ${tab === 'budget'
+        ? html`<${BudgetScreen} main=${main} dispatch=${dispatch} today=${today} open=${open} ask=${ask} notify=${notify} onSetup=${onSetup} openSettings=${openSettings} openRollover=${openRollover} />`
+        : html`<${AnalyticsScreen} main=${main} history=${history} today=${today} openPeriod=${openPeriod} />`}
+    </main>
+    <nav class="tabbar" aria-label="Sections"><div class="tabbar-inner">
+      <button class="tab" aria-current=${tab === 'budget' ? 'page' : null} onClick=${() => switchTab('budget')}>${Icon.budget(tab === 'budget')}Budget</button>
+      <button class="tab" aria-current=${tab === 'analytics' ? 'page' : null} onClick=${() => switchTab('analytics')}>${Icon.chart(tab === 'analytics')}Analytics</button>
+    </div></nav>
+    ${stack.map(s => html`<div key=${s.id}>${s.render(closeTop)}</div>`)}
+    ${toast ? html`<${Toast} key=${toast.id} t=${toast} onClose=${() => setToast(null)} />` : null}
+    ${dialog ? html`<${Alert} d=${dialog} onDone=${v => { dialog.res(v); setDialog(null); }} />` : null}
+  </div>`;
+}
+
+render(html`<${App} />`, document.getElementById('app'));
+})();
+</script>
+<noscript><p style="padding:24px">This budget needs JavaScript turned on.</p></noscript>
+</body>
+</html>
